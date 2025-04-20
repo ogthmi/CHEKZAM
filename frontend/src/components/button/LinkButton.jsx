@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
+
 export const LinkButton = ({ variant = "primary", size = null, content, className = "", href }) => {
     const handleClick = (e) => {
         e.preventDefault();

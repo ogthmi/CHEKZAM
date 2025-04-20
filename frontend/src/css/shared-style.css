@@ -2,6 +2,7 @@ body {
     font-family: 'Segoe UI', sans-serif;
     --color-theme-main: #1f4ab2;
     --color-theme-light-blue: #cfd9ef;
+    --box-background-color: #e7edfa;
     --color-theme-grey: #eeecec;
     --var-border-radius: 5px;
 }
@@ -41,6 +42,11 @@ body {
 
 }
 
+.Toastify__toast-container--top-right {
+    top: 70px !important;
+    right: 1rem;
+}
+
 .sidebar {
     min-height: 10vh;
     max-height: 55vh;
@@ -64,7 +70,10 @@ body {
     border-radius: 2px;
 }
 
-
+.spinner-slow {
+    animation-duration: 2s;
+    /* Điều chỉnh tốc độ quay, 2s là thời gian quay 1 vòng */
+}
 
 .hover-underline {
     text-decoration: none;
@@ -84,10 +93,6 @@ body {
     border-radius: var(--var-border-radius);
 }
 
-.btn-danger {
-    background-color: #bb2019 !important;
-}
-
 .btn-light {
     background-color: var(--color-theme-grey);
     border-radius: var(--var-border-radius);
@@ -99,6 +104,11 @@ body {
     height: auto;
 }
 
+.box {
+    border: 1px solid var(--color-theme-main);
+    background-color: var(--box-background-color);
+
+}
 
 .text-primary {
     color: var(--color-theme-main) !important

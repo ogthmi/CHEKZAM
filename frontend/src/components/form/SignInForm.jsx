@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import CustomAlert from '../common/CustomAlert';
-
 import { Link } from 'react-router-dom';
+
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+
+import { useState } from 'react';
 import { useSignIn } from '../../hooks/auth/useSignin';
 
-import { SUB_ENDPOINTS } from '../../constants/endPoints';
+import { Endpoints } from '../../constants/links/Endpoints';
 
 export function SignInForm() {
     const [formData, setFormData] = useState({ username: "", password: "" });
@@ -29,7 +29,6 @@ export function SignInForm() {
             <h3 className="text-center mb-4 pt-5">Đăng nhập</h3>
             <Row className="justify-content-center">
                 <Col md={6} lg={5} className="p-5 pt-0">
-                    <CustomAlert message={null} error={error} />
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="username">
                             <Form.Label>Tên đăng nhập:</Form.Label>
@@ -52,7 +51,7 @@ export function SignInForm() {
                             />
                         </Form.Group>
                         <div className="mb-3 text-end">
-                            <Link to={SUB_ENDPOINTS.auth.forgot_password} className="text-primary">Quên mật khẩu?</Link>
+                            <Link to={Endpoints.auth.forgot_password} className="text-primary">Quên mật khẩu?</Link>
                         </div>
                         <div className="text-center mb-3">
                             <Button type="submit" className="w-100 btn-primary">Đăng nhập</Button>
@@ -62,7 +61,7 @@ export function SignInForm() {
                         <div className="text-center mb-3">
                             <p className='me-2'>
                                 Chưa có tài khoản?
-                                <Link to={SUB_ENDPOINTS.auth.signup} className="text-primary ms-2">Đăng ký</Link>
+                                <Link to={Endpoints.auth.signup} className="text-primary ms-2">Đăng ký</Link>
                             </p>
                         </div>
                     </Form>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { getPaginatedData } from "../../services/paginatedDataService";
-import { ERROR } from "../../constants/error";
+import { getPaginatedData } from "../../services/PaginatedDataService";
+import { ErrorMessages } from "../../constants/messages/ErrorMessages";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -10,15 +10,24 @@ export function usePaginatedData(object, containerId, pageNumber, sortBy, direct
     const [message, setMessage] = useState(null);
 
     const fetchData = useCallback(async () => {
+        if (typeof containerId === "undefined") return;
         try {
-            const response = await getPaginatedData(object, containerId, pageNumber, DEFAULT_PAGE_SIZE, sortBy, direction, keyword);
+            const response = await getPaginatedData(
+                object,
+                containerId,
+                pageNumber,
+                DEFAULT_PAGE_SIZE,
+                sortBy,
+                direction,
+                keyword
+            );
+
             setObjectData(response.objectContents);
             setTotalPages(response.totalPages);
-
         } catch (error) {
-            setMessage(ERROR.FETCH_FAILED);
+            setMessage(ErrorMessages.FETCH_FAILED);
         }
-    }, [object, pageNumber, sortBy, direction, keyword]);
+    }, [object, containerId, pageNumber, sortBy, direction, keyword]);
 
     useEffect(() => {
         fetchData();

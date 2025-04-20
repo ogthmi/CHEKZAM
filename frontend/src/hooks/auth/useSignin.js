@@ -1,4 +1,4 @@
-import { signin } from "../../services/authService";
+import { signin } from "../../services/AuthService";
 import { useAuth } from "./useAuth";
 
 export function useSignIn() {

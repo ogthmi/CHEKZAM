@@ -1,7 +1,7 @@
 import React from 'react';
 import { Nav } from "react-bootstrap";
 import { useLocation } from 'react-router-dom';
-import { MAIN_ENDPOINTS, SUB_ENDPOINTS } from '../../constants/endPoints';
+import { RootEndpoints, Endpoints } from '../../constants/links/Endpoints';
 
 const links = {
     landing: [
@@ -10,17 +10,18 @@ const links = {
         { name: 'Liên hệ', href: '#contact' }
     ],
     auth: [
-        { name: 'Trang chủ', href: SUB_ENDPOINTS.home.landing },
+        { name: 'Trang chủ', href: Endpoints.home.landing },
     ],
     admin: [
-        { name: 'Thống kê', href: SUB_ENDPOINTS.admin.dashboard },
+        { name: 'Thống kê', href: Endpoints.admin.dashboard },
         { name: 'Người dùng', href: '' },
     ],
     teacher: [
-        { name: 'Lớp học', href: SUB_ENDPOINTS.teacher.classroom }
+        { name: 'Lớp học', href: Endpoints.teacher.classroom },
+        { name: 'Bài tập', href: Endpoints.teacher.assignment }
     ],
     student: [
-        { name: 'Lớp học', href: SUB_ENDPOINTS.student.classroom }
+        { name: 'Lớp học', href: Endpoints.student.classroom }
     ]
 };
 
@@ -29,10 +30,10 @@ function DefineCurrentLinkByLocation() {
     const pathname = location.pathname;
 
     const endpointMap = {
-        [MAIN_ENDPOINTS.auth]: links.auth,
-        [MAIN_ENDPOINTS.admin]: links.admin,
-        [MAIN_ENDPOINTS.teacher]: links.teacher,
-        [MAIN_ENDPOINTS.student]: links.student
+        [RootEndpoints.auth]: links.auth,
+        [RootEndpoints.admin]: links.admin,
+        [RootEndpoints.teacher]: links.teacher,
+        [RootEndpoints.student]: links.student
     };
 
     const currentLinks = Object.keys(endpointMap).find(endpoint => pathname.startsWith(endpoint))

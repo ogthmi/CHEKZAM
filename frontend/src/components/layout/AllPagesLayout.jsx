@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomNavbar } from "../common/CustomNavbar";
 
-export const SharedLayout = ({ children }) => {
+export const AllPagesLayout = ({ children }) => {
     return (
         <>
             <CustomNavbar/>

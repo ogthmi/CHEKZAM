@@ -1,17 +1,17 @@
-import { LinkButton } from "../button/LinkButton";
-import { SUB_ENDPOINTS } from '../../constants/endPoints';
+import { LinkButton } from "../button/LinkButton"
+import { Endpoints } from '../../constants/links/Endpoints';
 
 export function SignButtons() {
     return (
         <div>
             <LinkButton
-                href={SUB_ENDPOINTS.auth.signin}
+                href={Endpoints.auth.signin}
                 variant="light"
                 className="me-2 text-center"
                 content="Đăng nhập"
             />
             <LinkButton
-                href={SUB_ENDPOINTS.auth.signup}
+                href={Endpoints.auth.signup}
                 content="Đăng ký"
             />
         </div>

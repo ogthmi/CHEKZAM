@@ -1,44 +1,45 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getCookie, setCookie } from "../../utils/cookiesUtil";
-import { getRedirectRouteByRole } from "../../routes/RoleBasedRoute";
-import { COOKIES } from "../../constants/data";
+import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {getRedirectRouteByRole} from "../../routes/routes-config/RoutesConfig";
+import {Cookies} from "../../constants/data/Cookies";
+import {toast} from "react-toastify"
 
 export function useAuth(authFunction) {
-    const [error, setError] = useState(null);
-    const [message, setMessage] = useState(null);
     const navigate = useNavigate();
-
-    const handleAuth = async (data) => {
-        setError(null);
+    const handleAuth = async (formData) => {
         try {
-            const response = await authFunction(data);
-            if (response.success) {
-                const info = response.data.result;
+            const {success, data, message} = await authFunction(formData);
+            if (success) {
+                const {token, userTokenResponse} = data.result;
+                const {fullName, roles} = userTokenResponse;
 
-                setCookie(COOKIES.token, info.token);
-                setCookie(COOKIES.compactUserInfo, info.userTokenResponse);
-                const mainRole = info.userTokenResponse.roles[0];
-                setCookie(COOKIES.mainRole, mainRole);
+                Cookies.setCookie(Cookies.accessToken, token);
+                Cookies.setCookie(Cookies.userInfo, {fullName, roles});
+                Cookies.setCookie(Cookies.mainRole, roles[0]);
 
-                if (data.password) setMessage("Đăng ký thành công. Đang chuyển hướng...");
+                if (authFunction === 'signin'){
+                    toast.success("Đăng nhập thành công.");
+                }
+                else if (authFunction === 'signup'){
+                    toast.success("Đăng ký thành công. Đang chuyển hướng...");
+                }
 
                 const redirectPage = getRedirectRouteByRole();
-                navigate(redirectPage, { replace: true });
+                navigate(redirectPage, {replace: true});
             } else {
-                setError(response.message);
+                toast.error(message)
             }
         } catch (error) {
-            setError(error.message);
+            toast.error(error.message)
         }
     };
 
     useEffect(() => {
-        const mainRole = getCookie(COOKIES.mainRole)?.toLowerCase();
+        const mainRole = Cookies.getCookie(Cookies.mainRole)?.toLowerCase();
         if (mainRole) {
-            navigate(getRedirectRouteByRole(mainRole), { replace: true });
+            navigate(getRedirectRouteByRole(mainRole), {replace: true});
         }
-    }, []);
+    }, [navigate]);
 
-    return { handleAuth, error, message };
+    return {handleAuth};
 }

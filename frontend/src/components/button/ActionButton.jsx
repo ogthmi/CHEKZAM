@@ -1,25 +1,41 @@
-import { useState } from "react";
-import { Button } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { useModal } from "../../hooks/data/useModal";
 
-export const ActionButton = ({ content, title = "Xác nhận", variant = "primary", size, className = "" }) => {
+export const ActionButton = ({
+    buttonContent,
+    variant = "primary",
+    size,
+    className = "",
+    modalTitle = "Xác nhận",
+    modalBody = ""
+}) => {
     const { isModalOpen, openModal, closeModal } = useModal();
 
     return (
         <>
             <Button variant={variant} size={size} className={className} onClick={openModal}>
-                {content}
+                {buttonContent}
             </Button>
 
-            <Modal show={isModalOpen} onHide={closeModal} centered backdrop="static">
+            <Modal show={isModalOpen} onHide={closeModal} size="lg" centered backdrop="static">
                 <Modal.Header closeButton>
-                    <h5>{title}</h5>
+                    <Modal.Title>
+                        {modalTitle}
+                    </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{content}</Modal.Body>
+                <Modal.Body className="text-center">
+                    <p className="fs-5 fw-normal text-muted">
+                        Giáo viên có thể chia sẽ mã lớp này cho sinh viên tham gia
+                    </p>
+                    <p
+                        className="fw-semibold text-primary"
+                        style = {{fontSize: "clamp(3rem, 6vw, 9rem)"}}
+                    >
+                        {modalBody}
+                    </p>
+                </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="light" onClick={closeModal}>Hủy</Button>
-                    <Button variant="danger" onClick={closeModal}>Xóa</Button>
+                    <Button variant="primary" onClick={closeModal}>Đóng</Button>
                 </Modal.Footer>
             </Modal>
         </>

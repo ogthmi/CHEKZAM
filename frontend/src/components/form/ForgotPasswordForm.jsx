@@ -1,8 +1,8 @@
 import { Container, Form, Button, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { SUB_ENDPOINTS } from "../../constants/endPoints";
+import { Endpoints } from "../../constants/links/Endpoints";
 
-export const ForgotPassWordForm = () => {
+export const ForgotPasswordForm = () => {
     return (
         <Container className="d-flex justify-content-center align-items-center mt-5 px-5">
             <Col md={6} lg={4}>
@@ -16,7 +16,7 @@ export const ForgotPassWordForm = () => {
                         Gửi yêu cầu
                     </Button>
                 </Form>
-                <Link to={SUB_ENDPOINTS.auth.signin} className="text-decoration-none text-primary"><p className="text-center">Quay lại đăng nhập</p></Link>
+                <Link to={Endpoints.auth.signin} className="text-decoration-none text-primary"><p className="text-center">Quay lại đăng nhập</p></Link>
                 <p className="mt-3 text-muted text-center" style={{ fontSize: "14px" }}>
                     Sau khi bấm gửi yêu cầu, vui lòng kiểm tra lại email để nhận mật khẩu khôi phục.
                 </p>

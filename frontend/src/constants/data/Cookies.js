@@ -1,7 +1,19 @@
-// Lưu đối tượng hoặc giá trị đơn giản vào cookie
-export function setCookie(name, value) {
+const COOKIES_EXPIRY_TIME = 1;
+
+export const Cookies =  {
+    accessToken: 'access-token',
+    refreshToken: 'refresh-token',
+    userInfo: 'user-info',
+    mainRole: 'main-role',
+
+    setCookie: (name, value) => setCookie(name, value),
+    getCookie: (name) => getCookie(name),
+    removeCookie: (name) => removeCookie(name),
+}
+
+function setCookie(name, value) {
     const expires = new Date();
-    expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000)); // 1 ngày
+    expires.setTime(expires.getTime() + (COOKIES_EXPIRY_TIME * 24 * 60 * 60 * 1000));
     const expiresString = "expires=" + expires.toUTCString();
     
     let valueString;
@@ -13,7 +25,8 @@ export function setCookie(name, value) {
 
     document.cookie = `${name}=${valueString}; ${expiresString}; path=/`;
 }
-export function getCookie(name) {
+
+function getCookie(name) {
     const nameEQ = name + "=";
     const ca = document.cookie.split(';');
     
@@ -32,6 +45,6 @@ export function getCookie(name) {
     return null;
 }
 
-export const removeCookie = (cookieName) => {
+const removeCookie = (cookieName) => {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 };

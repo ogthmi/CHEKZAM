@@ -1,8 +1,9 @@
 import { Container } from "react-bootstrap";
-import { SharedLayout } from "./SharedLayout"
-import { ClassroomDetailsHeader } from "../classroom/ClassroomDetailsHeader";
+import { AllPagesLayout } from "./AllPagesLayout"
+import { ClassroomInfoHeader } from "../classroom/ClassroomInfoHeader";
 import { CustomHorizontalTab } from "../common/CustomHorizontalTab";
 import { useParams, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 export function ClassroomHorizontalTab() {
     const { id } = useParams();
@@ -20,12 +21,13 @@ export function ClassroomHorizontalTab() {
 
 export const ClassroomDetailsLayout = ({ children }) => {
     return (
-        <SharedLayout>
+        <AllPagesLayout>
             <Container className="p-2 mt-3">
-                <ClassroomDetailsHeader />
-                <ClassroomHorizontalTab/>
+                <ClassroomInfoHeader />
+                <ClassroomHorizontalTab />
                 <main>{children}</main>
             </Container>
-        </SharedLayout>
+            <Outlet />
+        </AllPagesLayout>
     );
 }

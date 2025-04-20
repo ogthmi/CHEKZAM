@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { deleteData } from "../../services/crudService";
+import { deleteData } from "../../services/CRUDService";
+import {toast} from "react-toastify";
+import {getSuccessMessage} from "../../constants/messages/SuccessMessages";
+import {DataActions} from "../../constants/data/ActionMethods";
 
-export const useDeleteButton = (formType, idItemToDelete, onSuccess) => {
+export const useDeleteButton = (entityType, containerId, idItemToDelete, onSuccess) => {
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -12,9 +15,9 @@ export const useDeleteButton = (formType, idItemToDelete, onSuccess) => {
         setError(null);
 
         try {
-            const response = await deleteData(formType, idItemToDelete);
+            const response = await deleteData(entityType, containerId, idItemToDelete);
             if (response) {
-                setMessage("Xóa thành công");
+                toast.success(getSuccessMessage(entityType, DataActions.DELETE));
                 
                 setTimeout(() => {
                     if (onSuccess) {
@@ -23,10 +26,10 @@ export const useDeleteButton = (formType, idItemToDelete, onSuccess) => {
                     setTimeout(() => {
                         window.location.reload(); 
                     }, 200);
-                }, 500); 
+                }, 3000);
             }
         } catch (e) {
-            setError(e.message);
+            toast.error(e.message);
         } finally {
             setLoading(false);
         }

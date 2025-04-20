@@ -1,4 +1,4 @@
-import { signup } from "../../services/authService";
+import { signup } from "../../services/AuthService";
 import { useAuth } from "./useAuth";
 import { useState } from "react";
 
