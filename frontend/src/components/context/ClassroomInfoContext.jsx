@@ -1,17 +1,16 @@
 import {createContext, useState, useEffect} from "react";
-import {useLocation} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import {getData} from "../../services/CRUDService";
 import {EntityTypes} from "../../constants/data/EntityTypes";
 
 export const ClassroomInfoContext = createContext();
 
 export const ClassroomInfoProvider = ({children}) => {
+    console.log('[DEBUG] ClassroomInfoProvider rendered');
     const [currentClassroom, setCurrentClassroom] = useState();
-    const location = useLocation();
-
+    const {classroomId} = useParams();
+    console.log(classroomId)
     useEffect(() => {
-        const classroomIdPosition = 3;
-        const classroomId = location.pathname.split("/")[classroomIdPosition];
         const getClassroomInfo = async () => {
             try {
                 const classroomInfo = await getData(EntityTypes.classroom.INFO, null, classroomId);
@@ -22,12 +21,12 @@ export const ClassroomInfoProvider = ({children}) => {
         };
 
         getClassroomInfo();
-    }, [location.pathname]);
+    }, [classroomId]);
 
     useEffect(() => {
     }, [currentClassroom]);
 
-
+    console.log(currentClassroom)
     return (
         <ClassroomInfoContext.Provider value={[currentClassroom, setCurrentClassroom]}>
             {children}

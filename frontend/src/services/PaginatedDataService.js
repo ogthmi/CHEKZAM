@@ -5,12 +5,14 @@ import {makeRequest} from "./RequestService";
 
 function routePaginatedAPI(object, containerId) {
     switch (object) {
-        case EntityTypes.user:
+        case EntityTypes.user.INFO:
             return ApiLinks.user.all
         case EntityTypes.classroom.INFO:
             return ApiLinks.classroom.all
         case EntityTypes.classroom.STUDENT:
             return ApiLinks.classroomMember.all(containerId)
+        case EntityTypes.assignment.INFO:
+            return ApiLinks.assignment.all;
         default:
             break;
     }

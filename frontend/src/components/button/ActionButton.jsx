@@ -25,7 +25,7 @@ export const ActionButton = ({
                 </Modal.Header>
                 <Modal.Body className="text-center">
                     <p className="fs-5 fw-normal text-muted">
-                        Giáo viên có thể chia sẽ mã lớp này cho sinh viên tham gia
+                        Bạn có thể chia sẽ mã lớp này cho sinh viên tham gia
                     </p>
                     <p
                         className="fw-semibold text-primary"

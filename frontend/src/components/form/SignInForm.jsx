@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom';
-
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-
 import { useState } from 'react';
 import { useSignIn } from '../../hooks/auth/useSignin';
-
 import { Endpoints } from '../../constants/links/Endpoints';
 
 export function SignInForm() {
     const [formData, setFormData] = useState({ username: "", password: "" });
-    const { error, handleSignIn } = useSignIn();
+    const handleSignIn = useSignIn(formData);
 
     const handleChange = (e) => {
         setFormData({
@@ -20,7 +17,7 @@ export function SignInForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleSignIn(formData.username, formData.password);
+        handleSignIn(formData);
     };
 
 
@@ -51,7 +48,7 @@ export function SignInForm() {
                             />
                         </Form.Group>
                         <div className="mb-3 text-end">
-                            <Link to={Endpoints.auth.forgot_password} className="text-primary">Quên mật khẩu?</Link>
+                            <Link to={Endpoints.auth.forgotPassword} className="text-primary">Quên mật khẩu?</Link>
                         </div>
                         <div className="text-center mb-3">
                             <Button type="submit" className="w-100 btn-primary">Đăng nhập</Button>

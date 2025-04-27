@@ -7,12 +7,14 @@ import {ClassroomInfoContext} from "../../components/context/ClassroomInfoContex
 
 import {useContext, useState} from "react";
 import {usePaginatedData} from "../../hooks/data/usePaginatedData"
-
+import {UserRoles} from "../../constants/data/UserRoles";
+import {Cookies} from "../../constants/data/Cookies";
 import {EntityTypes} from "../../constants/data/EntityTypes";
 import {DataActions} from "../../constants/data/ActionMethods";
 
 const dataFields = () => ({
-    "Họ và tên": "fullName",
+    "Họ đệm": "lastName",
+    "Tên": "firstName",
     "Giới tính": "gender",
     "Trường": "school",
     "Khoa/Lớp": "department",
@@ -22,12 +24,13 @@ const dataFields = () => ({
 export const ClassroomMemberPage = () => {
     const [filters, setFilters] = useState({
         pageNumber: 1,
-        sortBy: "fullName",
+        sortBy: "firstName",
         direction: "asc",
         keyword: ""
     });
 
     const [currentClassroom] = useContext(ClassroomInfoContext);
+    console.info(currentClassroom);
     const classroomId = currentClassroom?.classroomId;
 
     // Luôn gọi hook, nhưng hiển thị loading khi classroomId chưa có
@@ -46,14 +49,16 @@ export const ClassroomMemberPage = () => {
             <p>"Đang tải dữ liệu lớp học..." </p>
         );
     }
+
+    const shouldShowActions = Cookies.getCookie(Cookies.mainRole) === UserRoles.teacher.value;
     return (
         <Container>
             <Row className="mt-3 mx-md-0 mx-2">
-                <Col lg={8}>
+                <Col lg={shouldShowActions ? 8 : 10}>
                     <SearchInput/>
                 </Col>
                 <Col lg={2}><SortDropdown/></Col>
-                <Col lg={2}>
+                {shouldShowActions && <Col lg={2}>
                     <SearchModalButton
                         entityType={EntityTypes.classroom.STUDENT}
                         content={"Thêm sinh viên"}
@@ -61,7 +66,7 @@ export const ClassroomMemberPage = () => {
                         mode={DataActions.APPEND}
                         containerId={classroomId}
                     />
-                </Col>
+                </Col>}
             </Row>
 
             {/* Hiển thị bảng khi classroomId đã có */}
@@ -69,15 +74,15 @@ export const ClassroomMemberPage = () => {
                 headers={Object.keys(dataFields())}
                 fields={Object.values(dataFields())}
                 data={objectData}
-                renderActions={(row) =>
+                renderActions={shouldShowActions ? (row) => (
                     <ConfirmModalButton
                         entityType={EntityTypes.classroom.STUDENT}
                         containerId={currentClassroom.classroomId}
                         itemIdToDelete={row.userId}
                         content="Xóa khỏi lớp"
                     />
-                }
-                leftAlignedColumns={[0, 1, 2, 3, 4]}
+                ) : undefined}
+                leftAlignedColumns={[0, 1, 3, 4, 5]}
             />
         </Container>
     );

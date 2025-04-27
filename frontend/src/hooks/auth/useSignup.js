@@ -1,33 +1,29 @@
-import { signup } from "../../services/AuthService";
-import { useAuth } from "./useAuth";
-import { useState } from "react";
+import {signup} from "../../services/AuthService";
+import {Cookies} from "../../constants/data/Cookies";
+import {toast} from "react-toastify";
+import {DefaultRoleBaseRoutes} from "../../router/core/RoleBasedRoutes";
 
-export function useSignUp() {
-    const { handleAuth, error, message } = useAuth(signup);
-    const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-        fullName: "",
-        birthdate: "",
-        gender: "",
-        role: "",
-        school: "",
-        department: "",
-        email: ""
-    });
+export function useSignUp(formData) {
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: name === "gender" || name === "role" ? value.toUpperCase() : value
-        }));
-    };
-
-    const handleSignUp = async (e) => {
+    return async (e) => {
         e.preventDefault();
-        await handleAuth(formData);
-    };
+        try {
+            const {success, data, message} = await signup(formData);
+            if (success) {
+                const {accessToken, basicUserInfoResponse} = data.result;
+                Cookies.setCookie(Cookies.accessToken, accessToken);
+                Cookies.setCookie(Cookies.userInfo, basicUserInfoResponse);
+                Cookies.setCookie(Cookies.mainRole, basicUserInfoResponse.roles[0]);
 
-    return { formData, handleChange, handleSignUp, error, message };
+                toast.success("Đăng ký thành công. Đang chuyển hướng...");
+                setTimeout(() => {
+                    window.location.href = DefaultRoleBaseRoutes(Cookies.getCookie(Cookies.mainRole));
+                }, 3000);
+            } else {
+                toast.error(message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    };
 }

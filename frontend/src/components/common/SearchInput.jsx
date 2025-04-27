@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import '../../css/shared-style.css';
 
 export const SearchInput = ({ setKeyword, onSearch, placeholder = "Tìm kiếm theo tên", className = "" }) => {
     const [inputValue, setInputValue] = useState("");

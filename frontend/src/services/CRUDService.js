@@ -11,9 +11,11 @@ function toAPI(entityType, containerId, itemId) {
         case EntityTypes.user.INFO:
             return ApiLinks.user.byId(itemId)
         case EntityTypes.classroom.INFO:
-            return ApiLinks.classroom.getById(itemId)
+            return ApiLinks.classroom.byId(itemId)
         case EntityTypes.classroom.STUDENT:
             return ApiLinks.classroomMember.root(containerId)
+        case EntityTypes.assignment.DETAILS:
+            return ApiLinks.assignment.byId(itemId)
         default:
             break;
     }

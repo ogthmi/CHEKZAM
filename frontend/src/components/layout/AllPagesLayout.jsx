@@ -1,11 +1,15 @@
 import React from "react";
 import { CustomNavbar } from "../common/CustomNavbar";
+import {Outlet} from "react-router-dom";
 
 export const AllPagesLayout = ({ children }) => {
     return (
         <>
             <CustomNavbar/>
-            <main>{children}</main>
+            <main>
+                {children || <Outlet/>}
+            </main>
+
         </>
     );
 }

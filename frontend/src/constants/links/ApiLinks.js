@@ -1,12 +1,13 @@
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 
-const API_GROUPS = {
+const ApiGroups = {
     auth: '/auth',
     classroom: '/classroom',
-    user: '/user'
+    user: '/user',
+    assignment: '/assignment',
 }
 
-const buildUrl = (group, path = '') => `${BASE_API_URL}${API_GROUPS[group]}${path}`;
+const buildUrl = (group, path = '') => `${BASE_API_URL}${ApiGroups[group]}${path}`;
 
 export const ApiLinks = {
     auth: {
@@ -18,8 +19,7 @@ export const ApiLinks = {
     },
     classroom: {
         all: buildUrl('classroom', '/all'),
-        getById: (classroomId) => buildUrl('classroom', classroomId? `/${classroomId}` : ""),
-        create: buildUrl('classroom'),
+        byId: (classroomId) => buildUrl('classroom', classroomId? `/${classroomId}` : ""),
     },
     classroomMember: {
         root: (classroomId) => buildUrl('classroom', `/${classroomId}/member`),
@@ -33,4 +33,9 @@ export const ApiLinks = {
         byId: (id) => buildUrl('user', `/${id}`),
         search: (keyword) => buildUrl('user', `?keyword=${keyword}`),
     },
+
+    assignment: {
+        all: buildUrl('assignment', '/all'),
+        byId: (assignmentId) => buildUrl('assignment', assignmentId? `/${assignmentId}` : ""),
+    }
 };

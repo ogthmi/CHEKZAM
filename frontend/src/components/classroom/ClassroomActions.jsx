@@ -7,12 +7,12 @@ import {ConfirmModalButton} from "../button/ConfirmModalButton";
 
 export const ClassroomRowRenderActions = ({mainRole, row}) => {
     const renderActions = () => {
-        if (mainRole === UserRoles.TEACHER.value) {
+        if (mainRole === UserRoles.teacher.value) {
             return (
                 <>
                     <FormModalButton
                         entityType={EntityTypes.classroom.INFO}
-                        content="Chỉnh sửa lớp"
+                        content="Chỉnh sửa"
                         size="sm"
                         className="me-lg-2 me-0 mb-lg-0 mb-2"
                         mode={DataActions.UPDATE}
@@ -22,12 +22,12 @@ export const ClassroomRowRenderActions = ({mainRole, row}) => {
                     <ConfirmModalButton
                         entityType={EntityTypes.classroom.INFO}
                         itemIdToDelete={row.classroomId}
-                        content="Xóa lớp"
+                        content="Xóa"
                         className=""
                     />
                 </>
             );
-        } else if (mainRole === UserRoles.STUDENT.value) {
+        } else if (mainRole === UserRoles.student.value) {
             return <ConfirmModalButton object={EntityTypes.classroom.INFO} itemIdToDelete={row.studentId}
                                        content="Rời khỏi lớp"/>
         } else return null;
@@ -37,14 +37,14 @@ export const ClassroomRowRenderActions = ({mainRole, row}) => {
 
 export const ClassroomRenderAction = ({mainRole}) => {
     const renderAction = () => {
-        if (mainRole === UserRoles.TEACHER.value) {
+        if (mainRole === UserRoles.teacher.value) {
             return <FormModalButton
                 entityType={EntityTypes.classroom.INFO}
                 content="Tạo lớp học"
                 className="w-100"
                 mode={DataActions.CREATE}
             />
-        } else if (mainRole === UserRoles.STUDENT.value) {
+        } else if (mainRole === UserRoles.student.value) {
             return <FormModalButton content="Tham gia lớp" className="w-100"/>;
         } else return null;
     }

@@ -8,6 +8,11 @@ export const EntityTypes = Object.freeze({
     user: {
         INFO: "USER_INFO",
         SEARCH: "USER_SEARCH",
+    },
+    assignment: {
+        INFO: "ASSIGNMENT_INFO",
+        DETAILS: "ASSIGNMENT_DETAILS",
+        FILE: "ASSIGNMENT_FILE",
     }
 });
 

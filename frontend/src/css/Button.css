@@ -1,0 +1,27 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    --color-theme-main: #1f4ab2;
+    --color-theme-light-blue: #cfd9ef;
+    --box-background-color: #e7edfa;
+    --color-theme-grey: #eeecec;
+    --var-border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: var(--color-theme-main);
+    border-radius: var(--var-border-radius);
+}
+
+.btn-light {
+    background-color: var(--color-theme-grey);
+    border-radius: var(--var-border-radius);
+}
+
+.btn-outline-primary {
+    border-color: var(--color-theme-main);
+    color: var(--color-theme-main);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--color-theme-main);
+}

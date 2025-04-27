@@ -22,7 +22,6 @@ export function CustomTable({
         getValueByField,
         handleRowClick
     } = useCustomTable({data, headers, fields, leftAlignedColumns, excludedFields, onRowClick});
-
     return (
         <Table className="mt-3 table-hover align-middle">
             <thead className="bg-secondary text-white">
@@ -50,7 +49,7 @@ export function CustomTable({
                                     {getValueByField(dataRow, field) ?? "—"}
                                 </td>
                             ))}
-                            {renderActions && <td className="text-center">{renderActions(dataRow)}</td>}
+                            {renderActions  && <td className="text-center">{renderActions(dataRow)}</td>}
                         </tr>
                     );
                 })

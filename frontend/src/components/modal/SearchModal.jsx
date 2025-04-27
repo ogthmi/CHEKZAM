@@ -2,15 +2,17 @@ import {Button, Form, Modal} from "react-bootstrap";
 import {SearchInput} from "../common/SearchInput";
 import {ApiLinks} from "../../constants/links/ApiLinks";
 import {EntityTypes} from "../../constants/data/EntityTypes";
-import {DataActions, HttpMethod} from "../../constants/data/ActionMethods";
 import {useState} from "react";
-import {makeRequest} from "../../services/RequestService";
 import {toast} from "react-toastify";
 import {CustomTable} from "../common/CustomTable";
 import {createData, getData} from "../../services/CRUDService";
 
 const dataFields = () => ({
-    "Họ và tên": "fullName", "Trường": "school", "Khoa/Lớp": "department", "Email": "email"
+    "Họ đêm": "lastName",
+    "Tên": "firstName",
+    "Trường": "school",
+    "Khoa/Lớp": "department",
+    "Email": "email"
 });
 
 export const SearchModal = ({
@@ -25,6 +27,7 @@ export const SearchModal = ({
         const API = ApiLinks.user.search(trimmedKeyword);
         console.info("[Call API]", API)
         const data = await getData(EntityTypes.user.SEARCH, null, trimmedKeyword);
+
         if (data) setSearchResults(prev => {
             const exists = prev.some(sv => sv.userId === data.userId);
             if (exists) return prev;
@@ -42,7 +45,6 @@ export const SearchModal = ({
             studentIdList.push(student.userId);
         }
         if (studentIdList.length > 0) {
-            const API = ApiLinks.classroomMember.root(containerId);
             const message = await createData(entityType, containerId,  null,{studentIdList});
             if (message) {
                 toast.success("Thao tác thành công.");

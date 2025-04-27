@@ -1,58 +1,62 @@
 import React from 'react';
-import { Nav } from "react-bootstrap";
-import { useLocation } from 'react-router-dom';
-import { RootEndpoints, Endpoints } from '../../constants/links/Endpoints';
+import {Nav} from "react-bootstrap";
+import {useLocation} from 'react-router-dom';
+import {RootEndpoints, Endpoints} from '../../constants/links/Endpoints';
 
 const links = {
     landing: [
-        { name: 'Giới thiệu', href: '#landing' },
-        { name: 'Tính năng', href: '#features' },
-        { name: 'Liên hệ', href: '#contact' }
+        {name: 'Giới thiệu', href: '#landing'},
+        {name: 'Tính năng', href: '#features'},
+        {name: 'Liên hệ', href: '#contact'}
     ],
     auth: [
-        { name: 'Trang chủ', href: Endpoints.home.landing },
+        {name: 'Trang chủ', href: Endpoints.home.landing},
     ],
     admin: [
-        { name: 'Thống kê', href: Endpoints.admin.dashboard },
-        { name: 'Người dùng', href: '' },
+        {name: 'Thống kê', href: Endpoints.admin.classroomDashboard},
+        {name: 'Người dùng', href: Endpoints.admin.userManagement},
     ],
     teacher: [
-        { name: 'Lớp học', href: Endpoints.teacher.classroom },
-        { name: 'Bài tập', href: Endpoints.teacher.assignment }
+        {name: 'Lớp học', href: Endpoints.classroom.root},
+        {name: 'Bài tập', href: Endpoints.assignment.root}
     ],
     student: [
-        { name: 'Lớp học', href: Endpoints.student.classroom }
+        {name: 'Lớp học', href: Endpoints.classroom.root}
     ]
 };
 
 function DefineCurrentLinkByLocation() {
-    const location = useLocation();
-    const pathname = location.pathname;
+    const {pathname} = useLocation();
+
+    const role = pathname.split('/')[1];
 
     const endpointMap = {
-        [RootEndpoints.auth]: links.auth,
-        [RootEndpoints.admin]: links.admin,
-        [RootEndpoints.teacher]: links.teacher,
-        [RootEndpoints.student]: links.student
+        auth: links.auth,
+        admin: links.admin,
+        teacher: links.teacher,
+        student: links.student
     };
 
-    const currentLinks = Object.keys(endpointMap).find(endpoint => pathname.startsWith(endpoint))
-        ? endpointMap[Object.keys(endpointMap).find(endpoint => pathname.startsWith(endpoint))]
-        : links.landing;
-
-    return currentLinks;
+    return endpointMap[role] || links.landing;
 }
 
 export function NavLinks() {
     const currentLinks = DefineCurrentLinkByLocation();
+    const {pathname} = useLocation();
+    const role = pathname.split('/')[1];
 
     return (
         <>
-            {currentLinks.map((link, index) => (
-                <Nav.Link key={index} href={link.href} className='me-3'>
-                    {link.name}
-                </Nav.Link>
-            ))}
+            {currentLinks.map((link, index) => {
+                const href = typeof link.href === 'function' ? link.href(role) : link.href;
+
+                return (
+                    <Nav.Link key={index} href={href} className='me-3'>
+                        {link.name}
+                    </Nav.Link>
+                );
+            })}
         </>
     );
 }
+

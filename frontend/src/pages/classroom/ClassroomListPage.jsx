@@ -15,7 +15,7 @@ import {Cookies} from "../../constants/data/Cookies";
 const dataFields = (mainRole) => ({
     "Mã lớp": "classroomId",
     "Tên lớp": "classroomName",
-    ...(mainRole !== UserRoles.STUDENT.value && {"Thời gian tạo": "createdAt"}),
+    ...(mainRole !== UserRoles.student.value && {"Thời gian tạo": "createdAt"}),
     "Sĩ số": "classroomStatistic.totalMembers",
     "Bài tập": "classroomStatistic.totalExercises",
     "Tài liệu": "classroomStatistic.totalDocuments"
@@ -26,7 +26,7 @@ const getSortOptions = (mainRole) => [
     {label: "Z-A", value: "za"},
     {label: "Mã lớp tăng dần", value: "idasc"},
     {label: "Mã lớp giảm dần", value: "iddesc"},
-    ...(mainRole !== UserRoles.STUDENT.value ? [
+    ...(mainRole !== UserRoles.student.value ? [
         {label: "Mới hơn", value: "newer"},
         {label: "Cũ hơn", value: "older"},
     ] : [])
@@ -47,6 +47,8 @@ export const ClassroomListPage = () => {
     const {objectData, totalPages, message} = usePaginatedData(
         EntityTypes.classroom.INFO, null, filters.pageNumber, filters.sortBy, filters.direction, filters.keyword
     );
+
+    console.log(objectData);
 
     useEffect(() => {
         setFilters(prev => ({...prev, pageNumber: 1}));
@@ -89,9 +91,9 @@ export const ClassroomListPage = () => {
                 message={message}
                 renderActions={(row) => <ClassroomRowRenderActions mainRole={mainRole} row={row}/>}
                 leftAlignedColumns={[1]}
-                excludedFields={mainRole === UserRoles.STUDENT.value ? ['createdAt'] : []}
+                excludedFields={mainRole === UserRoles.student.value ? ['createdAt'] : []}
                 underlinedColumns={[1]}
-                onRowClick={(row) => navigate(`${Endpoints.teacher.classroom}/${row.classroomId}/assignment`)}
+                onRowClick={(row) => navigate(`${row.classroomId}/assignment`)}
             />
 
 

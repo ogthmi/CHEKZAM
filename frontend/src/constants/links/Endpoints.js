@@ -1,41 +1,26 @@
-import { UserRoles } from "../data/UserRoles";
-
-export const RootEndpoints = {
-    auth: '/auth',
-    error: '/error', 
-    admin: '/' + UserRoles.ADMIN.value.toLowerCase(),
-    teacher: '/' + UserRoles.TEACHER.value.toLowerCase(),
-    student: '/' + UserRoles.STUDENT.value.toLowerCase(),
-}
-
 export const Endpoints = {
     home: {
         landing: '/',
     },
     auth: {
-        signin: RootEndpoints.auth + '/signin',
-        signup: RootEndpoints.auth + '/signup',
-        forgot_password: RootEndpoints.auth + '/forgot',
+        signin: '/auth/signin',
+        signup: '/auth/signup',
+        forgotPassword: '/auth/forgot-password',
     },
     error: {
-        forbiden: RootEndpoints.error + '/403',
-        not_found: RootEndpoints.error + '/404',
-        internal_server: RootEndpoints.error + '/500',
+        forbidden: '/error/403',
+        notFound: '/error/404',
+        internalServer: '/error/500',
+    },
+    classroom: {
+        root: (role) => `/${role}/classroom`,
+    },
+    assignment: {
+        root: (role) => `/${role}/assignment`,
+        create: (role) => `/${role}/assignment/create`,
     },
     admin: {
-        dashboard: RootEndpoints.admin + "/dashboard",
+        userManagement: '/admin/user',
+        classroomDashboard: '/admin/dashboard',
     },
-    teacher: {
-        classroom: RootEndpoints.teacher + '/classroom',
-        assignment: RootEndpoints.teacher + '/assignment',
-    },
-    student: {
-        classroom: RootEndpoints.student + '/classroom',
-    }
 };
-
-export const DYNAMIC_ENDPOINTS = {
-    classroom_assignment: "/:id/assignment"
-}
-
-

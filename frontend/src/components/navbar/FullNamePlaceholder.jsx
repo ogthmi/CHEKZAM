@@ -4,9 +4,9 @@ import {UserDropdown} from "./UserDropdown";
 
 export function FullNamePlaceholder() {
     const userInfo = Cookies.getCookie(Cookies.userInfo);
-    const fullName = userInfo.fullName || "Tên người dùng";
+    const fullName = userInfo.lastName + " " + userInfo.firstName || "Tên người dùng";
     const mainRole = Cookies.getCookie(Cookies.mainRole);
-    const roleLabel = UserRoles[mainRole].label || "Chức vụ chính";
+    const roleLabel = UserRoles[mainRole.toLowerCase()].label || "Chức vụ chính";
 
     return (
         <div className='d-flex'>

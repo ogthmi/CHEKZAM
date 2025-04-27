@@ -1,12 +1,12 @@
-export const UserRoles = Object.freeze( {
-    ADMIN: {
+export const UserRoles = {
+    admin: {
         value: 'ADMIN', label: "Quản trị viên"
     },
-    TEACHER: {
+    teacher: {
         value: 'TEACHER', label: "Giáo viên"
     },
-    STUDENT: {
+    student: {
         value: 'STUDENT', label: 'Sinh viên'
     }
-})
+}
 

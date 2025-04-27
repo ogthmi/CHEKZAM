@@ -88,15 +88,9 @@ body {
     color: white;
 }
 
-.btn-primary {
-    background-color: var(--color-theme-main);
-    border-radius: var(--var-border-radius);
-}
 
-.btn-light {
-    background-color: var(--color-theme-grey);
-    border-radius: var(--var-border-radius);
-}
+
+
 
 
 .img-fluid {
