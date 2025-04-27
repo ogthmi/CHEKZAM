@@ -1,14 +1,12 @@
 package com.ogthmi.chekzam.configuration;
 
 import com.nimbusds.jose.JOSEException;
-import com.ogthmi.chekzam.dto.request.TokenRequest;
+import com.ogthmi.chekzam.dto.token.TokenRequest;
 import com.ogthmi.chekzam.exception.ApplicationException;
-import com.ogthmi.chekzam.exception.MessageCode;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.util.JwtUtil;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -28,17 +26,15 @@ public class CustomJwtDecoder implements JwtDecoder {
 
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 
-    @Value("${jwt.signerKey}")
+    @Value("${jwt.signer-key}")
     private String SIGNER_KEY;
 
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
-            var response = jwtUtil.introspect(TokenRequest.builder()
-                            .token(token)
-                    .build());
+            var response = jwtUtil.introspect(TokenRequest.builder().token(token).build());
             if (!response.isValid()){
-                throw new ApplicationException(MessageCode.TOKEN_EXPIRED);
+                throw new ApplicationException(ExceptionMessageCode.NEED_REFRESH_TOKEN);
             }
         }
         catch (JOSEException | ParseException exception){

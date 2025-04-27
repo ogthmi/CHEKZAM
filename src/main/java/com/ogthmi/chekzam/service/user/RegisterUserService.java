@@ -1,10 +1,10 @@
 package com.ogthmi.chekzam.service.user;
 
 import com.ogthmi.chekzam.constant.Role;
-import com.ogthmi.chekzam.dto.request.UserRequest;
+import com.ogthmi.chekzam.dto.user.UserInfoRequest;
 import com.ogthmi.chekzam.entity.User;
 import com.ogthmi.chekzam.exception.ApplicationException;
-import com.ogthmi.chekzam.exception.MessageCode;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.mapper.UserMapper;
 import com.ogthmi.chekzam.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -13,9 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -27,8 +25,7 @@ public class RegisterUserService {
 
     private void validatePassword(String password){
         if (password.length() < 8) {
-            log.info("PASSWORD: WEAK");
-            throw new ApplicationException(MessageCode.WEAK_PASSWORD);
+            throw new ApplicationException(ExceptionMessageCode.WEAK_PASSWORD);
         }
     }
     private List<Role> defineRolesByRequest (Role request){
@@ -40,22 +37,25 @@ public class RegisterUserService {
         return roles;
     }
 
-    public User registerUser(UserRequest userRequest) {
-        if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
-            throw new ApplicationException(MessageCode.USER_ALREADY_EXIST);
+    public User registerUser(UserInfoRequest userInfoRequest) {
+        if (userRepository.existsByUsername(userInfoRequest.getUsername())) {
+            throw new ApplicationException(ExceptionMessageCode.USER_ALREADY_EXIST);
         }
 
-        validatePassword(userRequest.getPassword());
-        log.info("Password: OK");
+        if (userRepository.existsByEmail(userInfoRequest.getEmail())){
+            throw new ApplicationException(ExceptionMessageCode.EMAIL_ALREADY_EXIST);
+        }
 
-        String encodedPassword = passwordEncoder.encode(userRequest.getPassword());
+        validatePassword(userInfoRequest.getPassword());
 
-        List<Role> roles = defineRolesByRequest(userRequest.getRole());
-        log.info("ADD ROLE SUCCESSFULLY");
+        String encodedPassword = passwordEncoder.encode(userInfoRequest.getPassword());
 
-        User newUser = userMapper.toUser(userRequest, encodedPassword, roles);
+        List<Role> roles = defineRolesByRequest(userInfoRequest.getRole());
+
+        User newUser = userMapper.toUser(userInfoRequest, encodedPassword, roles);
         userRepository.save(newUser);
 
+        log.info("Register new user successfully: {}", newUser.getUserId());
         return newUser;
     }
 

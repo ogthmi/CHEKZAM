@@ -1,13 +1,14 @@
 package com.ogthmi.chekzam.service.classroom;
 
 import com.ogthmi.chekzam.constant.Role;
-import com.ogthmi.chekzam.dto.request.ClassroomRequest;
-import com.ogthmi.chekzam.dto.response.ClassroomResponse;
-import com.ogthmi.chekzam.dto.response.user.UserProfileResponse;
+import com.ogthmi.chekzam.dto.classroom.ClassroomInfoRequest;
+import com.ogthmi.chekzam.dto.classroom.ClassroomStudentRequest;
+import com.ogthmi.chekzam.dto.classroom.ClassroomInfoResponse;
+import com.ogthmi.chekzam.dto.user.FullUserInfoResponse;
 import com.ogthmi.chekzam.entity.Classroom;
 import com.ogthmi.chekzam.entity.User;
 import com.ogthmi.chekzam.exception.ApplicationException;
-import com.ogthmi.chekzam.exception.MessageCode;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.mapper.ClassroomMapper;
 import com.ogthmi.chekzam.mapper.UserMapper;
 import com.ogthmi.chekzam.repository.ClassroomRepository;
@@ -15,6 +16,7 @@ import com.ogthmi.chekzam.repository.UserRepository;
 import com.ogthmi.chekzam.util.PaginationUtil;
 import com.ogthmi.chekzam.service.user.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,11 +24,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import java.util.List;
-import java.util.Set;
 
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final UserService userService;
@@ -37,14 +39,32 @@ public class ClassroomService {
 
     private Classroom findClassroomById(String classroomId){
         return classroomRepository.findById(classroomId).orElseThrow(
-                () -> new ApplicationException(MessageCode.CLASSROOM_NOT_FOUND)
+                () -> new ApplicationException(ExceptionMessageCode.CLASSROOM_NOT_FOUND)
         );
     }
 
-    public ClassroomResponse createNewClassroom (ClassroomRequest classroomRequest){
+    private boolean hasAccessToClassroom(User user, Classroom classroom) {
+        List<Role> roles = user.getRoles();
+        return  roles.contains(Role.ADMIN) ||
+                (roles.contains(Role.TEACHER) && classroom.getTeacher().equals(user)) ||
+                classroom.getStudents().contains(user);
+    }
+
+    public Classroom findClassroomByIdAndCurrentUserRole(String classroomId) {
+        Classroom classroom = findClassroomById(classroomId);
+        User currentUser = userService.findCurrentUser();
+
+        if (!hasAccessToClassroom(currentUser, classroom)){
+            log.warn("Unauthorized access attempt by user {} to classroom {}", currentUser.getUserId(), classroomId);
+            throw new ApplicationException(ExceptionMessageCode.UNAUTHORIZED_ACCESS);
+        }
+        return classroom;
+    }
+
+    public ClassroomInfoResponse createNewClassroom (ClassroomInfoRequest classroomInfoRequest){
         User teacher =  userService.findCurrentUser();
 
-        Classroom newClassroom = classroomMapper.toClassroom(classroomRequest);
+        Classroom newClassroom = classroomMapper.toClassroom(classroomInfoRequest);
         newClassroom.setTeacher(teacher);
         newClassroom.setCreatedAt(LocalDateTime.now());
 
@@ -52,111 +72,96 @@ public class ClassroomService {
         return classroomMapper.toClassroomResponse(newClassroom);
     }
 
-    public Page<ClassroomResponse> getAllClassroom(int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
+    public Page<ClassroomInfoResponse> getAllClassroom(int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
         User currentUser = userService.findCurrentUser();
         Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
 
-        Page<Classroom> classroomsPage = getClassroomsByRole(currentUser, keyword, pageable);
+        Page<Classroom> classroomsPage = getAllClassroomsByRole(currentUser, keyword, pageable);
         return classroomsPage.map(classroomMapper::toClassroomResponse);
     }
 
-    private Page<Classroom> getClassroomsByRole(User user, String keyword, Pageable pageable) {
+    private Page<Classroom> getAllClassroomsByRole(User user, String keyword, Pageable pageable) {
         List<Role> roles = user.getRoles();
 
         if (roles.contains(Role.ADMIN)) {
-            return findForAdmin(keyword, pageable);
+            return findAllClassroomsForAdmin(keyword, pageable);
         } else if (roles.contains(Role.TEACHER)) {
-            return findForTeacher(user, keyword, pageable);
+            return findAllClassroomsForTeacher(user, keyword, pageable);
         } else if (roles.contains(Role.STUDENT)) {
-            return findForStudent(user, keyword, pageable);
+            return findAllClassroomsForStudent(user, keyword, pageable);
         } else {
-            throw new ApplicationException(MessageCode.UNAUTHORIZED_ACCESS);
+            throw new ApplicationException(ExceptionMessageCode.UNAUTHORIZED_ACCESS);
         }
     }
 
-    private Page<Classroom> findForAdmin(String keyword, Pageable pageable) {
+    private Page<Classroom> findAllClassroomsForAdmin(String keyword, Pageable pageable) {
         return (keyword == null || keyword.isBlank())
                 ? classroomRepository.findAll(pageable)
                 : classroomRepository.findByClassroomNameContainingIgnoreCase(keyword, pageable);
     }
 
-    private Page<Classroom> findForTeacher(User teacher, String keyword, Pageable pageable) {
+    private Page<Classroom> findAllClassroomsForTeacher(User teacher, String keyword, Pageable pageable) {
         return (keyword == null || keyword.isBlank())
                 ? classroomRepository.findByTeacher(teacher, pageable)
                 : classroomRepository.findByTeacherAndClassroomNameContainingIgnoreCase(teacher, keyword, pageable);
     }
 
-    private Page<Classroom> findForStudent(User student, String keyword, Pageable pageable) {
+    private Page<Classroom> findAllClassroomsForStudent(User student, String keyword, Pageable pageable) {
         return (keyword == null || keyword.isBlank())
                 ? classroomRepository.findByStudentsContaining(student, pageable)
                 : classroomRepository.findByStudentsContainingAndClassroomNameContainingIgnoreCase(student, keyword, pageable);
     }
 
-    public ClassroomResponse getClassroom(String classroomId) {
-        Classroom classroom = findClassroomById(classroomId);
-        User currentUser = userService.findCurrentUser();
-
-        List<Role> roles = currentUser.getRoles();
-        if (roles.contains(Role.ADMIN) ||
-                (roles.contains(Role.TEACHER) && classroom.getTeacher().equals(currentUser)) ||
-                classroom.getStudents().contains(currentUser)) {
-            return classroomMapper.toClassroomResponse(classroom);
-        }
-        throw new ApplicationException(MessageCode.UNAUTHORIZED_ACCESS);
-    }
-
-    public Page<UserProfileResponse> getAllStudentsInClassroom (
+    public Page<FullUserInfoResponse> getAllStudentsInClassroom (
             String classroomId, int pageNumber, int pageSize, String sortBy, String direction, String keyword
     ){
         Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
         Page<User> students = userRepository.findByClassrooms_ClassroomIdAndRolesContaining(classroomId, Role.STUDENT, pageable);
-        return students.map(userMapper::toUserProfileResponse);
+        return students.map(userMapper::toFullUserInfoResponse);
     }
 
-    public ClassroomResponse addStudentToClassroom(String classroomId, String studentId) {
-        User teacher = userService.findCurrentUser();
-        Classroom classroom = findClassroomById(classroomId);
-
-        if (!classroom.getTeacher().equals(teacher)) {
-            throw new ApplicationException(MessageCode.UNAUTHORIZED_ACCESS);
+    public void addStudentToClassroom(String classroomId, ClassroomStudentRequest classroomStudentRequest) {
+        Classroom classroom = findClassroomByIdAndCurrentUserRole(classroomId);
+        for (String studentId: classroomStudentRequest.getStudentIdList()){
+            User student = userService.findUserById(studentId);
+            classroom.getStudents().add(student);
         }
-
-        User student = userRepository.findById(studentId).orElseThrow(
-                () -> new ApplicationException(MessageCode.USER_NOT_FOUND)
+        classroomRepository.save(classroom);
+        log.info("Thêm {} sinh viên vào lớp học {} thành công",
+                classroomStudentRequest.getStudentIdList().size(),
+                classroom.getClassroomId()
         );
+    }
 
-        classroom.getStudents().add(student);
+    public void removeStudentFromClassroom(String classroomId, String studentId) {
+        Classroom classroom = findClassroomByIdAndCurrentUserRole(classroomId);
+
+        User student = userService.findUserById(studentId);
+
+        if (!classroom.getStudents().contains(student)) {
+            throw new ApplicationException(ExceptionMessageCode.STUDENT_NOT_IN_CLASS);
+        }
+
+        classroom.getStudents().remove(student);
         classroomRepository.save(classroom);
+        student.getClassrooms().remove(classroom);
+        userRepository.save(student);
 
+        log.info(String.format("Xóa thành công sinh viên: %s khỏi lớp %s", studentId, classroomId));
+    }
+
+    public ClassroomInfoResponse updateClassroom(String classroomId, ClassroomInfoRequest classroomInfoRequest) {
+        Classroom classroom = findClassroomByIdAndCurrentUserRole(classroomId);
+        classroom.setClassroomName(classroomInfoRequest.getClassroomName());
+        classroom.setDescription(classroomInfoRequest.getDescription());
+        classroomRepository.save(classroom);
         return classroomMapper.toClassroomResponse(classroom);
     }
 
-    public ClassroomResponse updateClassroom(String classroomId, ClassroomRequest classroomRequest) {
-        User teacher = userService.findCurrentUser();
-        Classroom classroom = findClassroomById(classroomId);
-
-        if (!classroom.getTeacher().equals(teacher)) {
-            throw new ApplicationException(MessageCode.UNAUTHORIZED_ACCESS);
-        }
-
-        classroom.setClassroomName(classroomRequest.getClassroomName());
-        classroom.setDescription(classroomRequest.getDescription());
-
-        classroomRepository.save(classroom);
-
-        return classroomMapper.toClassroomResponse(classroom);
-    }
-
-    public String deleteClassroom(String classroomId) {
-        User currentUser = userService.findCurrentUser();
-        Classroom classroom = findClassroomById(classroomId);
-
-        if (!(classroom.getTeacher().equals(currentUser) || currentUser.getRoles().contains(Role.ADMIN))) {
-            throw new ApplicationException(MessageCode.UNAUTHORIZED_ACCESS);
-        }
-
+    public void deleteClassroom(String classroomId) {
+        Classroom classroom = findClassroomByIdAndCurrentUserRole(classroomId);
         classroomRepository.delete(classroom);
-        return String.join(" ", "Xóa thành công lớp:", classroomId, classroom.getClassroomName());
+       log.info("Xóa thành công lớp {}", classroomId);
     }
 
 

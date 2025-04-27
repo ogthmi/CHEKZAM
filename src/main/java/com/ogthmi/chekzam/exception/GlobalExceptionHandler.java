@@ -1,17 +1,20 @@
 package com.ogthmi.chekzam.exception;
 
-import com.ogthmi.chekzam.dto.response.ApiResponse;
+import com.ogthmi.chekzam.dto.api.ApiResponse;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse<?>> handlingRuntimeException (RuntimeException exception){
         ApiResponse<?> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(MessageCode.INTERNAL_EXCEPTION.getCode());
+        apiResponse.setCode(ExceptionMessageCode.INTERNAL_EXCEPTION.getCode());
         apiResponse.setMessage(exception.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }

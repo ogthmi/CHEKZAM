@@ -5,16 +5,14 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.ogthmi.chekzam.dto.request.TokenRequest;
-import com.ogthmi.chekzam.dto.response.user.UserTokenResponse;
-import com.ogthmi.chekzam.dto.response.auth.TokenResponse;
+import com.ogthmi.chekzam.dto.token.TokenRequest;
+import com.ogthmi.chekzam.dto.token.TokenResponse;
+import com.ogthmi.chekzam.entity.InvalidateToken;
+import com.ogthmi.chekzam.entity.User;
 import com.ogthmi.chekzam.exception.ApplicationException;
-import com.ogthmi.chekzam.exception.MessageCode;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.repository.InvalidatedTokenRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.experimental.NonFinal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +29,7 @@ public class JwtUtil {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal
-    @Value("${jwt.signerKey}")
+    @Value("${jwt.signer-key}")
     private String SIGNER_KEY;
 
     @NonFinal
@@ -39,29 +37,33 @@ public class JwtUtil {
     private String ISSUER;
 
     @NonFinal
-    @Value("${jwt.expirationTime}")
-    private  int EXPIRATION_TIME;
+    @Value("${jwt.expiration-duration}")
+    private  int EXPIRATION_DURATION;
+
+    @NonFinal
+    @Value(("${jwt.refreshable-duration}"))
+    private int REFRESHABLE_DURATION;
 
     public JwtUtil(InvalidatedTokenRepository invalidatedTokenRepository) {
         this.invalidatedTokenRepository = invalidatedTokenRepository;
     }
 
-    public String buildScope(UserTokenResponse userTokenResponse){
-        return userTokenResponse.getRoles().stream()
+    public String buildScope(User user){
+        return user.getRoles().stream()
                 .map(Enum::name)
                 .collect(Collectors.joining(" "));
     }
 
-    public String generateToken(UserTokenResponse userTokenResponse) {
+    public String generateToken(User user) {
         try {
             JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
             JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                    .subject(userTokenResponse.getUsername())
-                    .claim("scope", buildScope(userTokenResponse))
+                    .subject(user.getUsername())
+                    .claim("scope", buildScope(user))
                     .issuer(ISSUER)
                     .issueTime(new Date())
                     .expirationTime(new Date(
-                            Instant.now().plus(EXPIRATION_TIME, ChronoUnit.HOURS).toEpochMilli()
+                            Instant.now().plus(EXPIRATION_DURATION, ChronoUnit.MINUTES).toEpochMilli()
                     ))
                     .jwtID(UUID.randomUUID().toString())
                     .build();
@@ -72,43 +74,64 @@ public class JwtUtil {
 
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            throw new ApplicationException(MessageCode.CREATE_TOKEN_FAILED);
+            throw new ApplicationException(ExceptionMessageCode.CREATE_TOKEN_FAILED);
         }
     }
 
-    public SignedJWT verifyToken(String tokenRequest) throws JOSEException, ParseException {
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
+    public SignedJWT verifyToken(String tokenRequest, boolean isRefreshed) throws JOSEException, ParseException {
         SignedJWT signedJWT = SignedJWT.parse(tokenRequest);
-        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        if (!verified){
-            throw new ApplicationException(MessageCode.UNAUTHENTICATED);
-        }
-        System.out.println("Token Expiration time: " + expirationTime);
-        if (expirationTime.before(Date.from(Instant.now()))){
-            throw new ApplicationException(MessageCode.TOKEN_EXPIRED);
-        }
-        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())){
-            throw new ApplicationException(MessageCode.UNAUTHENTICATED);
-        }
+        verifySignature(signedJWT);
+        verifyExpirationTime(signedJWT, isRefreshed);
+        verifyInvalidated(signedJWT);
         return signedJWT;
     }
 
-    public TokenResponse introspect(TokenRequest tokenRequest) throws JOSEException, ParseException {
-        boolean isValidToken = true;
-        try {
-            verifyToken(tokenRequest.getToken());
+    private void verifySignature (SignedJWT signedJWT) throws JOSEException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        var verified = signedJWT.verify(verifier);
+        if (!verified){
+            throw new ApplicationException(ExceptionMessageCode.UNAUTHENTICATED);
         }
-        catch (ApplicationException exception){
-            isValidToken = false;
-        }
+    }
 
-        return  TokenResponse.builder()
-                .valid(isValidToken)
+    private void verifyExpirationTime(SignedJWT signedJWT , boolean isRefreshed) throws ParseException {
+        Date expirationTime;
+        if (isRefreshed){
+            expirationTime = new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                    .toInstant()
+                    .plus(REFRESHABLE_DURATION, ChronoUnit.DAYS)
+                    .toEpochMilli());
+        }
+        else expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        if (expirationTime.before(Date.from(Instant.now()))){
+            throw new ApplicationException(ExceptionMessageCode.TOKEN_EXPIRED);
+        }
+    }
+
+    private void verifyInvalidated (SignedJWT signedJWT) throws ParseException {
+        String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
+        if (invalidatedTokenRepository.existsById(jwtId)){
+            throw new ApplicationException(ExceptionMessageCode.UNAUTHORIZED_ACCESS);
+        }
+    }
+
+    public void invalidateToken(SignedJWT signedJWT) throws ParseException, JOSEException {
+        String jti = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        InvalidateToken invalidateToken = InvalidateToken.builder()
+                .id(jti)
+                .expirationTime(expirationTime)
                 .build();
+        invalidatedTokenRepository.save(invalidateToken);
+    }
+
+    public TokenResponse introspect(TokenRequest tokenRequest) throws JOSEException, ParseException {
+        try {
+            verifyToken(tokenRequest.getToken(), false);
+            return TokenResponse.builder().valid(true).build();
+        } catch (ApplicationException exception) {
+            return TokenResponse.builder().valid(false).build();
+        }
     }
 
 }

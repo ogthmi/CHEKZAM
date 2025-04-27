@@ -1,15 +1,17 @@
 package com.ogthmi.chekzam.entity;
 
+import com.ogthmi.chekzam.entity.assignment.Assignment;
 import com.ogthmi.chekzam.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "classrooms")
+@Table(name = "classroom")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,11 +28,14 @@ public class Classroom {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column
+    private LocalDateTime createdAt;
+
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "classroom_students",
             joinColumns = @JoinColumn(name = "classroom_id"),
@@ -38,7 +43,8 @@ public class Classroom {
     )
     private Set<User> students = new HashSet<>();
 
-    private LocalDateTime createdAt;
+    @ManyToMany(mappedBy = "classroomList")
+    private List<Assignment> assignmentList;
 
     @PrePersist
     public void generateId() {

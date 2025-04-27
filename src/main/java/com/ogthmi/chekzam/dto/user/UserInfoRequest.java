@@ -1,4 +1,4 @@
-package com.ogthmi.chekzam.dto.request;
+package com.ogthmi.chekzam.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ogthmi.chekzam.constant.Gender;
@@ -10,13 +10,13 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest {
+public class UserInfoRequest {
     private String username;
     private String password;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private Gender gender;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
 
     private Role role;

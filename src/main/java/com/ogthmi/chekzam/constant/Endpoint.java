@@ -8,30 +8,43 @@ public class Endpoint {
         public static final String SIGNIN = "/signin";
         public static final String SIGNUP = "/signup";
         public static final String SIGNOUT = "/signout";
-        public static final String TOKEN = "/token";
+    }
+
+    public static class Token {
+        public static final String ROOT = "/token";
+        public static final String VALIDATE = ROOT + "/validate";
+        public static final String REFRESH = ROOT + "/refresh";
+
     }
 
     public static class User {
-        public static final String ROOT = API + "/users";
+        public static final String ROOT = API + "/user";
         public static final String GET_ALL = "/all";
         public static final String GET_ONE = "/{userId}";
         public static final String GET_ME = "/me";
     }
 
     public static class Classroom {
-        public static final String ROOT = API + "/classrooms";
+        public static final String ROOT = API + "/classroom";
         public static final String GET_ALL = "/all";
         public static final String GET_ONE = "/{classroomId}";
-        public static final String GET_ALL_MEMBERS = GET_ONE + "/members" + GET_ALL;
-        public static final String GET_ONE_MEMBER = GET_ONE + "/members" + "/{studentId}";
+        public static final String MEMBER = GET_ONE + "/member";
+        public static final String GET_ALL_MEMBERS = MEMBER + GET_ALL;
+        public static final String GET_ONE_MEMBER = MEMBER + "/{studentId}";
+        public static final String ASSIGNMENT = GET_ONE + "/assignment";
+        public static final String GET_ALL_ASSIGNMENTS = ASSIGNMENT + GET_ALL;
     }
 
     public static class Document {
-        public static final String ROOT = API + "/documents";
+        public static final String ROOT = API + "/document";
     }
 
     public static class Assignment {
-        public static final String ROOT = API + "/assignments";
+        public static final String ROOT = API + "/assignment";
+        public static final String GET_ALL = "/all";
+        public static final String GET_ONE = "/{assignmentId}";
+        public static final String ASSIGNED_CLASSROOM = GET_ONE + "/classroom";
+        public static final String QUESTION = GET_ONE + "/question";
     }
 
     public static final String[] PUBLIC_ENDPOINTS = {

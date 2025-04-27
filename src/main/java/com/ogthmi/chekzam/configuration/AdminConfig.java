@@ -26,16 +26,15 @@ public class AdminConfig {
     @Bean
     public ApplicationRunner createRootAdmin(UserRepository userRepository){
         return args -> {
-            if (userRepository.findByUsername("admin00").isEmpty()){
+            if (userRepository.findByUsername("admin").isEmpty()){
                 User rootAdmin = User.builder()
-                        .username("admin00")
+                        .username("admin")
                         .password(passwordEncoder.encode("admin123"))
-                        .fullName("Quản Trị Viên Gốc")
+                        .firstName("Gốc")
+                        .lastName("Admin")
                         .birthdate(LocalDate.parse("2000-01-01"))
                         .gender(Gender.MALE)
                         .roles(List.of(Role.ADMIN))
-                        .school("CHEKZAM")
-                        .department("Bộ phận quản trị")
                         .email("admin00@chekzam.com")
                         .createdAt(LocalDateTime.now())
                         .build();

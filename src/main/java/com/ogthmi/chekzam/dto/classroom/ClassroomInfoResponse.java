@@ -1,20 +1,22 @@
-package com.ogthmi.chekzam.dto.response;
+package com.ogthmi.chekzam.dto.classroom;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ClassroomResponse {
+public class ClassroomInfoResponse extends  ClassroomInfoRequest{
     private String classroomId;
-    private String classroomName;
-    private String description;
-    private String createdAt;
+
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
     private ClassroomTeacher classroomTeacher;
     private ClassroomStatistic classroomStatistic;
@@ -24,7 +26,8 @@ public class ClassroomResponse {
     @Builder
     public static class ClassroomTeacher {
         private String teacherId;
-        private String teacherName;
+        private String firstName;
+        private String lastName;
     }
 
     @Data

@@ -1,14 +1,15 @@
-package com.ogthmi.chekzam.dto.request;
+package com.ogthmi.chekzam.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class TokenRequest {
     private String token;
 }

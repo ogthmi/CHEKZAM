@@ -1,10 +1,10 @@
 package com.ogthmi.chekzam.controller;
 
 import com.ogthmi.chekzam.constant.Endpoint;
-import com.ogthmi.chekzam.dto.request.UserRequest;
-import com.ogthmi.chekzam.dto.response.ApiResponse;
-import com.ogthmi.chekzam.dto.response.user.UserProfileResponse;
-import com.ogthmi.chekzam.dto.response.user.UserTokenResponse;
+import com.ogthmi.chekzam.dto.user.UserInfoRequest;
+import com.ogthmi.chekzam.dto.api.ApiResponse;
+import com.ogthmi.chekzam.dto.user.FullUserInfoResponse;
+import com.ogthmi.chekzam.exception.message.SuccessMessageCode;
 import com.ogthmi.chekzam.service.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,34 +23,45 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping(Endpoint.User.GET_ALL)
-    public ApiResponse<Page<UserTokenResponse>> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+    public ApiResponse<Page<FullUserInfoResponse>> getAllUsers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(defaultValue = "fullName") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String keyword
     ){
-        return ApiResponse.ok(userService.getAllUsers(page, size));
+        return ApiResponse.success(
+                userService.getAllUsers(pageNumber, pageSize, sortBy, direction, keyword),
+                SuccessMessageCode.FETCHED_SUCCESSFULLY
+        );
     }
 
     @GetMapping(Endpoint.User.GET_ONE)
-    public ApiResponse<UserProfileResponse> getUserProfile(@PathVariable String userId) {
-        return ApiResponse.ok(userService.getUserProfile(userId));
+    public ApiResponse<FullUserInfoResponse> getUserProfile(@PathVariable String userId) {
+        return ApiResponse.success(userService.getUserProfile(userId), SuccessMessageCode.FETCHED_SUCCESSFULLY);
+    }
+
+    @GetMapping()
+    public ApiResponse<FullUserInfoResponse> searchProfile (@RequestParam String keyword){
+        return ApiResponse.success(userService.searchProfile(keyword), SuccessMessageCode.FETCHED_SUCCESSFULLY);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(Endpoint.User.GET_ONE)
-    public ApiResponse<UserProfileResponse> updateProfile(
+    public ApiResponse<FullUserInfoResponse> updateProfile(
             @PathVariable String userId,
-            @RequestBody UserRequest userRequest){
-        return ApiResponse.ok(userService.updateUserInfo(userId, userRequest));
+            @RequestBody UserInfoRequest userInfoRequest){
+        return ApiResponse.success(userService.updateUserInfo(userId, userInfoRequest), SuccessMessageCode.FETCHED_SUCCESSFULLY);
     }
 
     @GetMapping(Endpoint.User.GET_ME)
-    public ApiResponse<UserProfileResponse> getMyProfile() {
-        return ApiResponse.ok(userService.getMyUserProfile());
+    public ApiResponse<FullUserInfoResponse> getMyProfile() {
+        return ApiResponse.success(userService.getMyUserProfile(), SuccessMessageCode.FETCHED_SUCCESSFULLY);
     }
 
     @PutMapping(Endpoint.User.GET_ME)
-    public ApiResponse<UserProfileResponse> updateMyProfile(
-            @RequestBody UserRequest userRequest){
-        return ApiResponse.ok(userService.updateMyProfile(userRequest));
+    public ApiResponse<FullUserInfoResponse> updateMyProfile(
+            @RequestBody UserInfoRequest userInfoRequest){
+        return ApiResponse.success(userService.updateMyProfile(userInfoRequest), SuccessMessageCode.FETCHED_SUCCESSFULLY);
     }
 }

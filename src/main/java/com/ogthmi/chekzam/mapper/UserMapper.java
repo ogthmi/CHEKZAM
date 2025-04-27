@@ -1,32 +1,34 @@
 package com.ogthmi.chekzam.mapper;
 
 import com.ogthmi.chekzam.constant.Role;
-import com.ogthmi.chekzam.dto.request.UserRequest;
-import com.ogthmi.chekzam.dto.response.user.UserProfileResponse;
-import com.ogthmi.chekzam.dto.response.user.UserTokenResponse;
+import com.ogthmi.chekzam.dto.user.UserInfoRequest;
+import com.ogthmi.chekzam.dto.user.BasicUserInfoResponse;
+import com.ogthmi.chekzam.dto.user.FullUserInfoResponse;
 import com.ogthmi.chekzam.entity.User;
+import com.ogthmi.chekzam.util.DateTimeUtil;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class UserMapper {
-    public UserTokenResponse toTokenUserResponse(User user) {
-        return UserTokenResponse.builder()
+    public BasicUserInfoResponse toBasicUserInfoResponse(User user) {
+        return BasicUserInfoResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
-                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .roles(user.getRoles())
                 .build();
     }
 
-    public UserProfileResponse toUserProfileResponse(User user) {
-        return UserProfileResponse.builder()
+    public FullUserInfoResponse toFullUserInfoResponse(User user) {
+        return FullUserInfoResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
-                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .roles(user.getRoles())
                 .email(user.getEmail())
                 .birthdate(user.getBirthdate())
@@ -37,17 +39,18 @@ public class UserMapper {
                 .build();
     }
 
-    public User toUser(UserRequest userRequest, String encodedPassword, List<Role> roles){
+    public User toUser(UserInfoRequest userInfoRequest, String encodedPassword, List<Role> roles){
         return User.builder()
-                .username(userRequest.getUsername())
+                .username(userInfoRequest.getUsername())
                 .password(encodedPassword)
-                .fullName(userRequest.getFullName())
-                .birthdate(userRequest.getBirthdate())
-                .gender(userRequest.getGender())
+                .firstName(userInfoRequest.getFirstName())
+                .lastName(userInfoRequest.getLastName())
+                .birthdate(userInfoRequest.getBirthdate())
+                .gender(userInfoRequest.getGender())
                 .roles(roles)
-                .school(userRequest.getSchool())
-                .department(userRequest.getDepartment())
-                .email(userRequest.getEmail())
+                .school(userInfoRequest.getSchool())
+                .department(userInfoRequest.getDepartment())
+                .email(userInfoRequest.getEmail())
                 .createdAt(LocalDateTime.now())
                 .build();
     }

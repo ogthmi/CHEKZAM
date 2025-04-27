@@ -1,4 +1,4 @@
-package com.ogthmi.chekzam.dto.response.user;
+package com.ogthmi.chekzam.dto.user;
 
 import com.ogthmi.chekzam.constant.Role;
 import lombok.*;
@@ -11,9 +11,10 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public class UserTokenResponse {
+public class BasicUserInfoResponse {
     private String userId;
     private String username;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private List<Role> roles;
 }

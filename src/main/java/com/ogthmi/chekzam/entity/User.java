@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@ToString
 public class User {
     @Id
     @Column(nullable = false, unique = true)
@@ -30,7 +31,10 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false)
     private Gender gender;
@@ -44,10 +48,10 @@ public class User {
     @Column(name = "role")
     private List<Role> roles;
 
-    @Column(nullable = false)
+    @Column
     private String school;
 
-    @Column(nullable = false)
+    @Column
     private String department;
 
     @Column(nullable = false, unique = true)
@@ -61,7 +65,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "classroom_id")
     )
-    private Set<Classroom> classrooms;
+    private List<Classroom> classrooms;
 
     @PrePersist
     public void generateId(){

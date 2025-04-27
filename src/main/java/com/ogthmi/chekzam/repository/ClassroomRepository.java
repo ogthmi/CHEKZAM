@@ -16,5 +16,4 @@ public interface ClassroomRepository extends JpaRepository<Classroom, String> {
     Page<Classroom> findByClassroomNameContainingIgnoreCase(String keyword, Pageable pageable);
     Page<Classroom> findByTeacherAndClassroomNameContainingIgnoreCase(User teacher, String keyword, Pageable pageable);
     Page<Classroom> findByStudentsContainingAndClassroomNameContainingIgnoreCase(User student, String keyword, Pageable pageable);
-
 }

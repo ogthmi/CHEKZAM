@@ -1,4 +1,4 @@
-package com.ogthmi.chekzam.dto.request;
+package com.ogthmi.chekzam.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

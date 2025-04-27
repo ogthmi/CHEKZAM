@@ -1,18 +1,16 @@
 package com.ogthmi.chekzam.service.user;
 
-import com.ogthmi.chekzam.dto.request.UserRequest;
-import com.ogthmi.chekzam.dto.response.user.UserProfileResponse;
-import com.ogthmi.chekzam.dto.response.user.UserTokenResponse;
+import com.ogthmi.chekzam.dto.user.UserInfoRequest;
+import com.ogthmi.chekzam.dto.user.FullUserInfoResponse;
 import com.ogthmi.chekzam.entity.User;
 import com.ogthmi.chekzam.exception.ApplicationException;
-import com.ogthmi.chekzam.exception.MessageCode;
+import com.ogthmi.chekzam.exception.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.mapper.UserMapper;
 import com.ogthmi.chekzam.repository.UserRepository;
+import com.ogthmi.chekzam.util.PaginationUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,62 +25,91 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    private User findUserById(String userId) {
+    public User findUserById(String userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ApplicationException(MessageCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND));
     }
+
+    public User findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND));
+    }
+
+    public User findUserByEmail (String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND));
+    }
+
 
     public User findCurrentUser() {
         var context = SecurityContextHolder.getContext().getAuthentication();
         String username = context.getName();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ApplicationException(MessageCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND));
     }
 
-    public UserTokenResponse getUserTokenResponse(String userId) {
+    public FullUserInfoResponse getUserProfile(String userId) {
         User user = findUserById(userId);
-        return userMapper.toTokenUserResponse(user);
+        return userMapper.toFullUserInfoResponse(user);
     }
 
-    public UserProfileResponse getUserProfile(String userId) {
-        User user = findUserById(userId);
-        return userMapper.toUserProfileResponse(user);
+    public FullUserInfoResponse searchProfile(String keyword) {
+        if (keyword == null) {
+            throw new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND);
+        }
+        if (keyword.matches("\\d+")) {
+            if (userRepository.existsById(keyword)) {
+                return userMapper.toFullUserInfoResponse(findUserById(keyword));
+            }
+        }
+        else if (keyword.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            if (userRepository.existsByEmail(keyword)) {
+                return userMapper.toFullUserInfoResponse(findUserByEmail(keyword));
+            }
+        }
+        else {
+            if (userRepository.existsByUsername(keyword)) {
+                return userMapper.toFullUserInfoResponse(findUserByUsername(keyword));
+            }
+        }
+        throw new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND);
     }
 
-    public UserProfileResponse getMyUserProfile() {
+
+    public FullUserInfoResponse getMyUserProfile() {
         User currentUser = findCurrentUser();
-        return userMapper.toUserProfileResponse(currentUser);
+        return userMapper.toFullUserInfoResponse(currentUser);
     }
 
-    public Page<UserTokenResponse> getAllUsers(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("userId").ascending());
+    public Page<FullUserInfoResponse> getAllUsers(int page, int size, String sortBy, String direction, String keyword) {
+        Pageable pageable = PaginationUtil.buildPageable(page, size, sortBy, direction);
         Page<User> userPage = userRepository.findAll(pageable);
 
-        // map mỗi User -> UserTokenResponse và giữ nguyên phân trang
-        return userPage.map(userMapper::toTokenUserResponse);
+        // map mỗi User -> BasicUserInfoResponse và giữ nguyên phân trang
+        return userPage.map(userMapper::toFullUserInfoResponse);
     }
 
-
-    public UserProfileResponse updateUserInfo(String userId, UserRequest userRequest) {
+    public FullUserInfoResponse updateUserInfo(String userId, UserInfoRequest userInfoRequest) {
         User user = findUserById(userId);
-        return updateUserProfile(user, userRequest);
+        return updateFullUserInfo(user, userInfoRequest);
     }
 
-    public UserProfileResponse updateMyProfile(UserRequest userRequest) {
+    public FullUserInfoResponse updateMyProfile(UserInfoRequest userInfoRequest) {
         User user = findCurrentUser();
-        return updateUserProfile(user, userRequest);
+        return updateFullUserInfo(user, userInfoRequest);
     }
 
-    private UserProfileResponse updateUserProfile(User user, UserRequest userRequest) {
-        Optional.ofNullable(userRequest.getFullName()).ifPresent(user::setFullName);
-        Optional.ofNullable(userRequest.getEmail()).ifPresent(user::setEmail);
-        Optional.ofNullable(userRequest.getGender()).ifPresent(user::setGender);
-        Optional.ofNullable(userRequest.getBirthdate()).ifPresent(user::setBirthdate);
-        Optional.ofNullable(userRequest.getSchool()).ifPresent(user::setSchool);
-        Optional.ofNullable(userRequest.getDepartment()).ifPresent(user::setDepartment);
+    private FullUserInfoResponse updateFullUserInfo(User user, UserInfoRequest userInfoRequest) {
+        Optional.ofNullable(userInfoRequest.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(userInfoRequest.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(userInfoRequest.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(userInfoRequest.getGender()).ifPresent(user::setGender);
+        Optional.ofNullable(userInfoRequest.getBirthdate()).ifPresent(user::setBirthdate);
+        Optional.ofNullable(userInfoRequest.getSchool()).ifPresent(user::setSchool);
+        Optional.ofNullable(userInfoRequest.getDepartment()).ifPresent(user::setDepartment);
 
         userRepository.save(user);
-        return userMapper.toUserProfileResponse(user);
+        return userMapper.toFullUserInfoResponse(user);
     }
 
 
@@ -90,7 +117,7 @@ public class UserService {
         User user = findUserById(userId);
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new ApplicationException(MessageCode.PASSWORD_MISMATCH);
+            throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISMATCH);
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
