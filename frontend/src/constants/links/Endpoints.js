@@ -16,6 +16,9 @@ export const Endpoints = {
         root: (role) => `/${role}/classroom`,
     },
     assignment: {
+        domain: "/assignment",
+        content: "/content",
+        history: "/history",
         root: (role) => `/${role}/assignment`,
         create: (role) => `/${role}/assignment/create`,
     },
@@ -23,4 +26,8 @@ export const Endpoints = {
         userManagement: '/admin/user',
         classroomDashboard: '/admin/dashboard',
     },
+    user: {
+        myProfile: '/user/my-profile',
+        getProfile: (id) => `/user/${id}`,
+    }
 };

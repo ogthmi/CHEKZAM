@@ -1,0 +1,128 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    --blue-900: #1f4ab2;
+    --blue-800: #426FDE;
+    --blue-700: #6287E4;
+    --blue-500: #8aa5ea;
+    --blue-400: #b4c3e6;
+    --blue-300: #cfd9ef;
+    --blue-100: #e7edfa;
+    --grey-100: #eeecec;
+
+    --border-radius: 5px;
+}
+
+.text-justify{
+    text-align: justify;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: flex;
+    font-size: 1.5rem;
+
+}
+
+.navbar .nav-link {
+    color: gray;
+}
+
+.navbar .nav-link.active {
+    color: var(--blue-900);
+    font-weight: bold;
+}
+
+.logo {
+    padding: 10px 0;
+    width: 40px;
+}
+
+.logo-footer {
+    width: 30%;
+}
+
+.nav-item {
+    li {
+        padding-right: 1rem;
+    }
+
+}
+
+.Toastify__toast-container--top-right {
+    top: 70px !important;
+    right: 1rem;
+}
+
+.sidebar {
+    min-height: 10vh;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+/* Thiết lập nội dung chính */
+.content {
+    height: calc(100vh - 65px);
+    overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar,
+.content::-webkit-scrollbar {
+    width: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.content::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}
+
+
+.hover-underline {
+    text-decoration: none;
+}
+
+.hover-underline:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+.img-fluid {
+    max-width: 80%;
+    height: auto;
+}
+
+.text-primary {
+    color: var(--blue-900) !important
+}
+
+.color-secondary {
+    color: var(--blue-300);
+}
+
+.bg-main {
+    background-color: var(--blue-900);
+}
+
+.bg-secondary {
+    background-color: var(--blue-300) !important;
+}
+
+
+thead {
+    --bs-table-bg: var(--blue-300);
+}
+
+
+.underlined-column:hover {
+    text-decoration: underline;
+}
+
+.badge.bg-primary {
+    background-color: var(--blue-900) !important;
+}

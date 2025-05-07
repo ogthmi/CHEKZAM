@@ -9,17 +9,17 @@ import {
     ClassroomDocumentPage,
     ClassroomListPage,
     ClassroomMemberPage
-} from "../../pages/classroom/ClassroomPages";
-import {AllPagesLayout} from "../../components/layout/AllPagesLayout";
-import {ClassroomDetailsLayout} from "../../components/layout/ClassroomDetailsLayout";
-import {ClassroomInfoProvider} from "../../components/context/ClassroomInfoContext";
+} from "../../modules/classroom/ClassroomPagesModule";
+import {CommonAppLayout} from "../../ui/components/layout/CommonAppLayout";
+import {ClassroomDetailsLayout} from "../../modules/classroom/components/common/ClassroomDetailsLayout";
+import {ClassroomInfoProvider} from "../../modules/classroom/components/common/ClassroomInfoContext";
 
 export const ClassroomRoutes = [
     <Route
         key="classroom-layout"
         element={
             <RoleBasedRoute allowedRoles={[UserRoles.teacher.value, UserRoles.student.value]}>
-                <AllPagesLayout/>
+                <CommonAppLayout/>
             </RoleBasedRoute>
         }
     >

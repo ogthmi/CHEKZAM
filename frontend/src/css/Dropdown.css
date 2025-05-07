@@ -1,0 +1,24 @@
+.no-caret-toggle::after {
+    display: none !important;
+}
+
+.dropdown-menu {
+    padding: 0.5rem;
+    border-radius: 3px;
+}
+
+.dropdown-item {
+    padding: 0.5rem;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--blue-100);
+    color: black;
+}
+
+.dropdown-item:active {
+    background-color: var(--blue-900);
+    color: white;
+}

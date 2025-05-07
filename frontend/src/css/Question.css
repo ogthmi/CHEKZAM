@@ -1,0 +1,14 @@
+.answer-selected {
+    background-color: var(--blue-100);
+    border-color: var(--blue-900);
+}
+
+.answer-correct {
+    background-color: #E9FAE7;
+    border-color: #35B21F;
+}
+
+.answer-incorrect {
+    background-color: #FEECEC;
+    border-color: #E21F1F;
+}

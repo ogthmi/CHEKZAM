@@ -20,10 +20,10 @@ export const RoleBasedRoute = ({ allowedRoles, children }) => {
     const isAuthenticated = !!Cookies.getCookie(Cookies.accessToken);
     const hasUserInfo = !!Cookies.getCookie(Cookies.userInfo);
 
-    console.log('[DEBUG] actualRole (from cookie):', actualRole);
-    console.log('[DEBUG] userRole (param):', userRole);
-    console.log('[DEBUG] allowedRoles:', allowedRoles);
-    console.log('[DEBUG] isAuthenticated:', isAuthenticated, '| hasUserInfo:', hasUserInfo);
+    // console.log('[DEBUG] actualRole (from cookie):', actualRole);
+    // console.log('[DEBUG] userRole (param):', userRole);
+    // console.log('[DEBUG] allowedRoles:', allowedRoles);
+    // console.log('[DEBUG] isAuthenticated:', isAuthenticated, '| hasUserInfo:', hasUserInfo);
 
     // 1. Check auth/session
     if (!isAuthenticated || !actualRole || !hasUserInfo) {
@@ -40,10 +40,10 @@ export const RoleBasedRoute = ({ allowedRoles, children }) => {
     // 3. Check param userRole với actualRole
     const userRoleUpper = userRole?.toUpperCase();
     if (userRole && userRoleUpper !== actualRole) {
-        console.warn('[DEBUG] Role mismatch! userRole:', userRoleUpper, '| actualRole:', actualRole);
+        // console.warn('[DEBUG] Role mismatch! userRole:', userRoleUpper, '| actualRole:', actualRole);
         return <Navigate to={DefaultRoleBaseRoutes(actualRole)} replace />;
     }
 
-    console.info('[DEBUG] Access granted!');
+    // console.info('[DEBUG] Access granted!');
     return children;
 };

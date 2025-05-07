@@ -4,19 +4,19 @@ import {ErrorMessages} from "../constants/messages/ErrorMessages";
 import {makeRequest} from "./RequestService";
 
 function routePaginatedAPI(object, containerId) {
-    switch (object) {
-        case EntityTypes.user.INFO:
-            return ApiLinks.user.all
-        case EntityTypes.classroom.INFO:
-            return ApiLinks.classroom.all
-        case EntityTypes.classroom.STUDENT:
-            return ApiLinks.classroomMember.all(containerId)
-        case EntityTypes.assignment.INFO:
-            return ApiLinks.assignment.all;
-        default:
-            break;
-    }
+    const routeMap = {
+        [EntityTypes.user.PROFILE]: () => ApiLinks.user.all,
+        [EntityTypes.classroom.INFO]: () => ApiLinks.classroom.all,
+        [EntityTypes.classroom.ADD_STUDENT]: () => ApiLinks.classroomMember.all(containerId),
+        [EntityTypes.classroom.ASSIGNMENT]: () => ApiLinks.classroomAssignment.all(containerId),
+        [EntityTypes.assignment.INFO]: () => ApiLinks.assignment.all,
+        [EntityTypes.assignment.QUESTIONS]: () => ApiLinks.assignment.questionList(containerId),
+    };
+
+    const routeFn = routeMap[object];
+    return routeFn ? routeFn() : undefined;
 }
+
 
 export const getPaginatedData = async (object, containerId, pageNumber, pageSize, sortBy, direction, keyword) => {
     const queryParams = new URLSearchParams(
@@ -24,6 +24,7 @@ export const getPaginatedData = async (object, containerId, pageNumber, pageSize
     );
     const paginatedApi = `${routePaginatedAPI(object, containerId)}?${queryParams.toString()}`
     console.info("[Call Paginated ApiLinks] ", paginatedApi)
+    // console.log(containerId)
     try {
         const response = await makeRequest(
             paginatedApi,

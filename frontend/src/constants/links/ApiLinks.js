@@ -25,17 +25,25 @@ export const ApiLinks = {
         root: (classroomId) => buildUrl('classroom', `/${classroomId}/member`),
         all: (classroomId) => buildUrl('classroom', `/${classroomId}/member/all`),
         getById: (classroomId, memberId) => buildUrl('classroom', `/${classroomId}/member/${memberId}`),
+        leave: (classroomId) => buildUrl('classroom', `/${classroomId}/member/me`),
+    },
+    classroomAssignment: {
+        root: (classroomId) => buildUrl('classroom', `/${classroomId}/assignment`),
+        all: (classroomId) => buildUrl('classroom', `/${classroomId}/assignment/all`),
+        getById: (classroomId, assignmentId) => buildUrl('classroom', `/${classroomId}/assignment/${assignmentId}`),
     },
 
     user: {
         all: buildUrl('user', '/all'),
-        myProfile: buildUrl('user', '/my-profile'),
+        myProfile: buildUrl('user', '/me'),
         byId: (id) => buildUrl('user', `/${id}`),
         search: (keyword) => buildUrl('user', `?keyword=${keyword}`),
     },
 
     assignment: {
+        root: buildUrl('assignment'),
         all: buildUrl('assignment', '/all'),
         byId: (assignmentId) => buildUrl('assignment', assignmentId? `/${assignmentId}` : ""),
+        questionList: (assignmentId) => buildUrl('assignment', `/${assignmentId}/question`),
     }
 };

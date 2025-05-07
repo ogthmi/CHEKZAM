@@ -5,24 +5,24 @@ import {Endpoints} from "../../constants/links/Endpoints";
 import {UserRoles} from "../../constants/data/UserRoles";
 
 
-import {AllPagesLayout} from "../../components/layout/AllPagesLayout";
-import {AssignmentListPage} from "../../pages/assignment/AssignmentListPage";
-import {AssignmentInfoProvider} from "../../components/context/AssignmentInfoContext";
-import {AssignmentDetailsLayout} from "../../components/layout/AssignmentDetailsLayout";
-import {AssignmentDetailsPage} from "../../pages/assignment/AssignmentDetailsPage";
-import {CreateAssignmentPage} from "../../pages/assignment/CreateAssignmentPage";
+import {CommonAppLayout} from "../../ui/components/layout/CommonAppLayout";
+import {AssignmentListPage} from "../../modules/assignment/pages/AssignmentListPage";
+import {AssignmentInfoProvider} from "../../modules/assignment/components/context/AssignmentInfoContext";
+import {AssignmentDetailsLayout} from "../../modules/assignment/components/context/AssignmentDetailsLayout";
+import {AssignmentDetailsPage} from "../../modules/assignment/pages/AssignmentDetailsPage";
+import {AssignmentCreatePage} from "../../modules/assignment/pages/AssignmentCreatePage";
 
 export const AssignmentRoutes = [
     <Route
         key="assignment-layout"
         element={
             <RoleBasedRoute allowedRoles={[UserRoles.teacher.value]}>
-                <AllPagesLayout/>
+                <CommonAppLayout/>
             </RoleBasedRoute>
         }
     >
         <Route path={Endpoints.assignment.root(':userRole')} element={<AssignmentListPage/>}/>
-        <Route path={Endpoints.assignment.create(':userRole')} element={<CreateAssignmentPage/>}/>/>
+        <Route path={Endpoints.assignment.create(':userRole')} element={<AssignmentCreatePage/>}/>/>
     </Route>,
 
     <Route
@@ -35,7 +35,7 @@ export const AssignmentRoutes = [
             </RoleBasedRoute>
         }
     >
-        <Route path={`detail`} element={<AssignmentDetailsPage/>}/>
+        <Route path={`content`} element={<AssignmentDetailsPage/>}/>
     </Route>
 
 

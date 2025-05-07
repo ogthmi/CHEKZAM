@@ -1,24 +1,24 @@
-export const EntityTypes = Object.freeze({
+export const EntityTypes = {
     classroom: {
         INFO: "CLASSROOM_INFO",
-        STUDENT: "CLASSROOM_STUDENT",
-        JOIN: "JOIN_CLASSROOM",
-        LEAVE: "LEAVE_CLASSROOM"
+        ADD_STUDENT: "CLASSROOM_ADD_STUDENT",
+        REMOVE_STUDENT: "CLASSROOM_REMOVE_STUDENT",
+        ASSIGNMENT: "CLASSROOM_ASSIGNMENT",
+        ADD_ASSIGNMENT: "CLASSROOM_ADD_ASSIGNMENT",
+        REMOVE_ASSIGNMENT: "CLASSROOM_REMOVE_ASSIGNMENT",
+        JOIN: "CLASSROOM_JOIN",
+        LEAVE: "CLASSROOM_LEAVE",
+        DELETE: "CLASSROOM_DELETE",
     },
     user: {
-        INFO: "USER_INFO",
+        PROFILE: "USER_INFO",
+        MY_PROFILE: "USER_MY_INFO",
         SEARCH: "USER_SEARCH",
     },
     assignment: {
+        CREATE: "ASSIGNMENT_CREATE",
         INFO: "ASSIGNMENT_INFO",
-        DETAILS: "ASSIGNMENT_DETAILS",
+        QUESTIONS: "ASSIGNMENT_QUESTIONS",
         FILE: "ASSIGNMENT_FILE",
     }
-});
-
-export const FormTypes = Object.freeze({
-    FORM: "FORM",
-    SEARCH: "SEARCH",
-    CONFIRM: "CONFIRM",
-
-});
+};

@@ -4,22 +4,31 @@ import {EntityTypes} from "../constants/data/EntityTypes";
 import {ErrorMessages} from "../constants/messages/ErrorMessages"
 import {makeRequest} from "./RequestService"
 
+const apiMap = {
+    [EntityTypes.user.PROFILE]: (containerId, itemId) => ApiLinks.user.search(itemId),
+    [EntityTypes.user.MY_PROFILE]: () => ApiLinks.user.myProfile,
+    [EntityTypes.user.SEARCH]: (containerId, itemId) => ApiLinks.user.search(itemId),
+    [EntityTypes.user.PROFILE]: (containerId, itemId) => ApiLinks.user.byId(itemId),
+    [EntityTypes.classroom.INFO]: (containerId, itemId) => ApiLinks.classroom.byId(itemId),
+    [EntityTypes.classroom.JOIN]: (containerId, itemId) => ApiLinks.classroomMember.getById(containerId, itemId),
+    [EntityTypes.classroom.LEAVE]: (containerId, itemId) => ApiLinks.classroomMember.leave(containerId),
+    [EntityTypes.classroom.ADD_STUDENT]: (containerId, itemId) => ApiLinks.classroomMember.root(containerId),
+    [EntityTypes.assignment.CREATE]: () => ApiLinks.assignment.root,
+    [EntityTypes.classroom.ADD_ASSIGNMENT]: (containerId, itemId) => ApiLinks.classroomAssignment.getById(containerId, itemId),
+    [EntityTypes.assignment.INFO]: (containerId, itemId) => ApiLinks.assignment.byId(itemId),
+};
+
 function toAPI(entityType, containerId, itemId) {
-    switch (entityType) {
-        case EntityTypes.user.SEARCH:
-            return ApiLinks.user.search(itemId)
-        case EntityTypes.user.INFO:
-            return ApiLinks.user.byId(itemId)
-        case EntityTypes.classroom.INFO:
-            return ApiLinks.classroom.byId(itemId)
-        case EntityTypes.classroom.STUDENT:
-            return ApiLinks.classroomMember.root(containerId)
-        case EntityTypes.assignment.DETAILS:
-            return ApiLinks.assignment.byId(itemId)
-        default:
-            break;
+    const apiResolver = apiMap[entityType];
+
+    if (!apiResolver) {
+        console.warn(`[toAPI] Unknown entityType: ${entityType}`);
+        return null;
     }
+
+    return apiResolver(containerId, itemId);
 }
+
 
 export const getData = async (entityType, containerId, itemId) => {
     try {

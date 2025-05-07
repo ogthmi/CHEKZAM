@@ -1,0 +1,12 @@
+.pagination .page-item .page-link {
+    border-radius: 0;
+}
+
+.pagination .page-item .page-link {
+    color: var(--blue-900);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--blue-800);
+    color: white;
+}
