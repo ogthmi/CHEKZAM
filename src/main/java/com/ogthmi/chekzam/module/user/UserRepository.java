@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
-    Page<UserEntity> findByClassrooms_ClassroomIdAndRolesContaining(String classroomId, Role role, Pageable pageable);
+    Page<UserEntity> findByClassroomList_ClassroomEntity_ClassroomIdAndRolesContaining(String classroomId, Role role, Pageable pageable);
 
     boolean existsByUsername (String username);
     boolean existsByEmail(String email);

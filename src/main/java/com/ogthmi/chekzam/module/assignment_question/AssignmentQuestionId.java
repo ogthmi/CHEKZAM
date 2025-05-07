@@ -10,6 +10,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentQuestionId implements Serializable {
-    private String assignment; // tên phải TRÙNG với entity
-    private String question;
+    private String assignmentEntity; // tên phải TRÙNG với entity
+    private String questionEntity;
 }

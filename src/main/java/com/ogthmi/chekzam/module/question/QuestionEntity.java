@@ -1,6 +1,6 @@
 package com.ogthmi.chekzam.module.question;
 
-import com.ogthmi.chekzam.module.answer.Answer;
+import com.ogthmi.chekzam.module.answer.AnswerEntity;
 import com.ogthmi.chekzam.common.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,17 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-public class Question {
+public class QuestionEntity {
     @Id
     @Column(name = "question_id", nullable = false)
     private String questionId;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String questionContent;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "questionEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("answerOrder")
-    private List<Answer> answerList;
+    private List<AnswerEntity> answerEntityList;
 
     @PrePersist
     public void generatedId() {

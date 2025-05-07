@@ -23,11 +23,33 @@ public class RegisterUserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    private void validatePassword(String password){
+    public void validatePassword(String password) {
+        // Validate password length
         if (password.length() < 8) {
             throw new ApplicationException(ExceptionMessageCode.WEAK_PASSWORD);
         }
+
+        // Validate uppercase letter existence
+        if (!password.matches(".*[A-Z].*")) {
+            throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISSING_UPPERCASE);
+        }
+
+        // Validate lowercase letter existence
+        if (!password.matches(".*[a-z].*")) {
+            throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISSING_LOWERCASE);
+        }
+
+        // Validate digit existence
+        if (!password.matches(".*\\d.*")) {
+            throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISSING_NUMBER);
+        }
+
+        // Validate special char existence
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISSING_SPECIAL_CHAR);
+        }
     }
+
     private List<Role> defineRolesByRequest (Role request){
         List<Role> roles = new ArrayList<>();
         roles.add(request);
@@ -47,7 +69,6 @@ public class RegisterUserService {
         }
 
         validatePassword(userInfoRequest.getPassword());
-
         String encodedPassword = passwordEncoder.encode(userInfoRequest.getPassword());
 
         List<Role> roles = defineRolesByRequest(userInfoRequest.getRole());

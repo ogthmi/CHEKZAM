@@ -15,7 +15,7 @@ public class ClassroomMapper {
         ClassroomInfoResponse.ClassroomStatistic classroomStatistic = ClassroomInfoResponse.ClassroomStatistic.builder()
                 .totalDocuments(0)
                 .totalAssignments(classroomEntity.getAssignmentList() != null? classroomEntity.getAssignmentList().size(): 0)
-                .totalMembers((classroomEntity.getStudents() != null ? classroomEntity.getStudents().size() : 0))
+                .totalMembers((classroomEntity.getStudentList() != null ? classroomEntity.getStudentList().size() : 0))
                 .build();
         return ClassroomInfoResponse.builder()
                 .classroomId(classroomEntity.getClassroomId())

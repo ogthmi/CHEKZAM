@@ -11,19 +11,15 @@ import org.springframework.stereotype.Component;
 public class AssignmentMapper {
     private final QuestionMapper questionMapper;
 
-    public Assignment toAssignment(AssignmentRequest assignmentRequest) {
-        return Assignment.builder()
+    public AssignmentEntity toAssignment(AssignmentRequest assignmentRequest) {
+        return AssignmentEntity.builder()
                 .assignmentName(assignmentRequest.getAssignmentName())
                 .description(assignmentRequest.getDescription())
                 .assignmentType(assignmentRequest.getAssignmentType())
-                .duration(assignmentRequest.getDuration())
-                .maxAttempts(assignmentRequest.getMaxAttempts())
-                .startTime(assignmentRequest.getStartTime())
-                .endTime(assignmentRequest.getEndTime())
                 .build();
     }
 
-    private AssignmentResponse.AssignmentTeacher toAssignmentTeacher (Assignment assignment){
+    private AssignmentResponse.AssignmentTeacher toAssignmentTeacher (AssignmentEntity assignment){
         return AssignmentResponse.AssignmentTeacher.builder()
                 .teacherId(assignment.getTeacher().getUserId())
                 .firstName(assignment.getTeacher().getFirstName())
@@ -31,18 +27,14 @@ public class AssignmentMapper {
                 .build();
     }
 
-    public AssignmentResponse toAssignmentInfoResponse(Assignment assignment) {
+    public AssignmentResponse toAssignmentInfoResponse(AssignmentEntity assignment) {
         return AssignmentResponse.builder()
                 .assignmentId(assignment.getAssignmentId())
                 .assignmentName(assignment.getAssignmentName())
                 .description(assignment.getDescription())
                 .assignmentType(assignment.getAssignmentType())
                 .createdAt(assignment.getCreatedAt())
-                .duration(assignment.getDuration())
-                .maxAttempts(assignment.getMaxAttempts())
-                .totalQuestions(assignment.getQuestionList() != null ? assignment.getQuestionList().size() : 0)
-                .startTime(assignment.getStartTime())
-                .endTime(assignment.getEndTime())
+                .totalQuestions(assignment.getQuestionList() == null? 0 : assignment.getQuestionList().size())
                 .assignmentTeacher(toAssignmentTeacher(assignment))
                 .build();
     }

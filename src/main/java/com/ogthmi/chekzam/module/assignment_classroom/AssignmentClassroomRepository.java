@@ -1,6 +1,8 @@
 package com.ogthmi.chekzam.module.assignment_classroom;
 
-import com.ogthmi.chekzam.module.assignment.Assignment;
+import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
+import com.ogthmi.chekzam.module.assignment_classroom.entity.AssignmentClassroomEntity;
+import com.ogthmi.chekzam.module.assignment_classroom.entity.AssignmentClassroomId;
 import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +11,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssignmentClassroomRepository extends JpaRepository <AssignmentClassroomEntity, AssignmentClassroomId> {
-    Page<AssignmentClassroomEntity> findByAssignment_AssignmentIdAndClassroom_ClassroomNameContainingIgnoreCase(Assignment assignment, Pageable pageable);
-    Page<AssignmentClassroomEntity> findByClassroom_ClassroomIdAndAssignment_AssignmentNameContainingIgnoreCase(ClassroomEntity classroomEntity, Pageable pageable);
-    void deleteByAssignmentAndClassroom (Assignment assignment, ClassroomEntity classroomEntity);
+    Page<AssignmentClassroomEntity> findByAssignmentEntity_AssignmentIdAndClassroomEntity_ClassroomNameContainingIgnoreCase(String assignmentId, String classroomName, Pageable pageable);
+    Page<AssignmentClassroomEntity> findByClassroomEntity_ClassroomIdAndAssignmentEntity_AssignmentNameContainingIgnoreCase(String classroomId, String assignmentName, Pageable pageable);
+    void deleteByAssignmentEntityAndClassroomEntity(AssignmentEntity assignmentEntity, ClassroomEntity classroomEntity);
+    boolean existsByAssignmentEntityAndClassroomEntity(AssignmentEntity assignmentEntity, ClassroomEntity classroomEntity);
 }

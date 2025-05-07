@@ -1,7 +1,7 @@
-package com.ogthmi.chekzam.module.assignment_classroom;
+package com.ogthmi.chekzam.module.assignment_classroom.entity;
 
+import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
 import com.ogthmi.chekzam.module.assignment.assignment_enum.AssignmentStatus;
-import com.ogthmi.chekzam.module.assignment.Assignment;
 import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,7 +21,7 @@ public class AssignmentClassroomEntity {
     @Id
     @ManyToOne
     @JoinColumn(name = "assignment_id", nullable = false)
-    private Assignment assignment;
+    private AssignmentEntity assignmentEntity;
 
     @Id
     @ManyToOne

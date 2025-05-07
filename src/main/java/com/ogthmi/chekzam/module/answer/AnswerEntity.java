@@ -1,6 +1,6 @@
 package com.ogthmi.chekzam.module.answer;
 
-import com.ogthmi.chekzam.module.question.Question;
+import com.ogthmi.chekzam.module.question.QuestionEntity;
 import com.ogthmi.chekzam.common.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class Answer {
+public class AnswerEntity {
     @Id
     @Column(name = "answer_id", nullable = false)
     private String answerId;
@@ -27,7 +27,7 @@ public class Answer {
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
-    private Question question;
+    private QuestionEntity questionEntity;
 
     @Column(name = "answer_order")
     private int answerOrder;

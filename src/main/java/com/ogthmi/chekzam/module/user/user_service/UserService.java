@@ -1,6 +1,7 @@
 package com.ogthmi.chekzam.module.user.user_service;
 
 import com.ogthmi.chekzam.module.user.UserEntity;
+import com.ogthmi.chekzam.module.user.user_dto.PasswordChangeRequest;
 import com.ogthmi.chekzam.module.user.user_dto.UserInfoRequest;
 import com.ogthmi.chekzam.module.user.user_dto.FullUserInfoResponse;
 import com.ogthmi.chekzam.common.exception.ApplicationException;
@@ -23,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RegisterUserService registerUserService;
     private final UserMapper userMapper;
 
     public UserEntity findUserById(String userId) {
@@ -113,19 +115,25 @@ public class UserService {
     }
 
 
-    public void changePassword(String userId, String oldPassword, String newPassword) {
-        UserEntity userEntity = findUserById(userId);
+    public void changePassword(PasswordChangeRequest passwordChangeRequest) {
+        UserEntity userEntity = findCurrentUser();
 
-        if (!passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
+        if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), userEntity.getPassword())) {
+            throw new ApplicationException(ExceptionMessageCode.INCORRECT_PASSWORD);
+        }
+        if (passwordChangeRequest.getNewPassword().equals(passwordChangeRequest.getOldPassword())){
+            throw new ApplicationException(ExceptionMessageCode.NEW_PASSWORD_IDENTICAL);
+        }
+        if (!passwordChangeRequest.getNewPassword().equals(passwordChangeRequest.getConfirmPassword())){
             throw new ApplicationException(ExceptionMessageCode.PASSWORD_MISMATCH);
         }
-
-        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        registerUserService.validatePassword(passwordChangeRequest.getNewPassword());
+        userEntity.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
         userRepository.save(userEntity);
     }
 
     public void deleteUser(String userId) {
-        UserEntity userEntity = findUserById(userId);
-        userRepository.delete(userEntity);
+        if (userId == null) throw new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND);
+        userRepository.deleteById(userId);
     }
 }

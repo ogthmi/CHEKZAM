@@ -1,4 +1,4 @@
-package com.ogthmi.chekzam.module.assignment_classroom;
+package com.ogthmi.chekzam.module.assignment_classroom.entity;
 
 
 import lombok.AllArgsConstructor;
@@ -11,6 +11,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentClassroomId implements Serializable {
-    private String assignment; // variable name must be identical to entity class name
-    private String classroom;
+    private String assignmentEntity; // variable name must be identical to entity class name
+    private String classroomEntity;
 }

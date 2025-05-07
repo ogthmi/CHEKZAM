@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AssignmentRepository extends JpaRepository<Assignment, String> {
-    Page<Assignment> findByTeacher(UserEntity teacher, String keyword, Pageable pageable);
-    Page<Assignment> findByTeacherAndAssignmentNameContainingIgnoreCase(UserEntity teacher, String keyword, Pageable pageable);
-    Page<Assignment> findByClassroomList_ClassroomId(String classroomId, Pageable pageable);
-    Page<Assignment> findByClassroomList_ClassroomIdAndAssignmentNameContainingIgnoreCase(String classroomId, String keyword, Pageable pageable);
+public interface AssignmentRepository extends JpaRepository<AssignmentEntity, String> {
+    Page<AssignmentEntity> findByTeacher(UserEntity teacher, String keyword, Pageable pageable);
+    Page<AssignmentEntity> findByTeacherAndAssignmentNameContainingIgnoreCase(UserEntity teacher, String keyword, Pageable pageable);
+    Page<AssignmentEntity> findByClassroomList_ClassroomEntity_ClassroomId(String classroomId, Pageable pageable);
+    Page<AssignmentEntity> findByClassroomList_ClassroomEntity_ClassroomIdAndAssignmentNameContainingIgnoreCase(String classroomId, String keyword, Pageable pageable);
 
 }

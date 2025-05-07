@@ -1,19 +1,17 @@
 package com.ogthmi.chekzam.module.classroom;
 
-import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomEntity;
+import com.ogthmi.chekzam.module.assignment_classroom.entity.AssignmentClassroomEntity;
+import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
 import com.ogthmi.chekzam.module.user.UserEntity;
-import com.ogthmi.chekzam.module.assignment.Assignment;
 import com.ogthmi.chekzam.common.util.IdGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "classroomEntity")
+@Table(name = "classroom")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -37,22 +35,10 @@ public class ClassroomEntity {
     @JoinColumn(name = "teacher_id", nullable = false)
     private UserEntity teacher;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "classroom_students",
-            joinColumns = @JoinColumn(name = "classroom_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<UserEntity> students = new HashSet<>();
+    @OneToMany(mappedBy = "classroomEntity", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<ClassroomStudentEntity> studentList;
 
-    @ManyToMany
-    @JoinTable(
-            name = "assignment_classrooms",
-            joinColumns = @JoinColumn(name = "classroom_id"),
-            inverseJoinColumns = @JoinColumn(name = "assignment_id")
-    )
-    private Set<Assignment> assignments = new HashSet<>();
-
+    @OneToMany(mappedBy = "classroomEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AssignmentClassroomEntity> assignmentList;
 
     @PrePersist

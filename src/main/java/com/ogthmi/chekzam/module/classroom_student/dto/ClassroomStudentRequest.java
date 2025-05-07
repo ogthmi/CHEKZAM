@@ -1,4 +1,4 @@
-package com.ogthmi.chekzam.module.classroom.classroom_dto;
+package com.ogthmi.chekzam.module.classroom_student.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

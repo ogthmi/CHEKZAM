@@ -1,23 +1,19 @@
 package com.ogthmi.chekzam.module.assignment;
 
-import com.ogthmi.chekzam.module.assignment.assignment_enum.AssignmentStatus;
+import com.ogthmi.chekzam.module.answer.AnswerDTO;
+import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
 import com.ogthmi.chekzam.module.question.QuestionService;
 import com.ogthmi.chekzam.module.user.user_enum.Role;
-import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomRequest;
 import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentRequest;
 import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentResponse;
 import com.ogthmi.chekzam.module.question.QuestionDTO;
-import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomEntity;
-import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
 import com.ogthmi.chekzam.module.user.UserEntity;
 import com.ogthmi.chekzam.module.assignment_question.AssignmentQuestionEntity;
-import com.ogthmi.chekzam.module.question.Question;
+import com.ogthmi.chekzam.module.question.QuestionEntity;
 import com.ogthmi.chekzam.common.exception.ApplicationException;
 import com.ogthmi.chekzam.common.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.module.question.QuestionMapper;
-import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomRepository;
 import com.ogthmi.chekzam.module.assignment_question.AssignmentQuestionRepository;
-import com.ogthmi.chekzam.module.classroom.ClassroomService;
 import com.ogthmi.chekzam.module.user.user_service.UserService;
 import com.ogthmi.chekzam.common.util.PaginationUtil;
 import lombok.AllArgsConstructor;
@@ -35,25 +31,69 @@ import java.util.List;
 public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final AssignmentQuestionRepository assignmentQuestionRepository;
-    private final AssignmentClassroomRepository assignmentClassroomRepository;
     private final UserService userService;
-    private final ClassroomService classroomService;
     private final QuestionService questionService;
     private final AssignmentMapper assignmentMapper;
     private final QuestionMapper questionMapper;
 
-    public Assignment findAssignmentById(String assignmentId) {
+    public AssignmentEntity findAssignmentById(String assignmentId) {
         return assignmentRepository.findById(assignmentId).orElseThrow(
                 () -> new ApplicationException(ExceptionMessageCode.ASSIGNMENT_NOT_FOUND)
         );
     }
 
-    public AssignmentResponse createNewAssignment(AssignmentRequest assignmentRequest) {
-        Assignment newAssignment = assignmentMapper.toAssignment(assignmentRequest);
-        newAssignment.setTeacher(userService.findCurrentUser());
-        newAssignment.setCreatedAt(LocalDateTime.now());
 
-        assignmentRepository.save(newAssignment);
+    private void validateAssignmentRequest(AssignmentRequest assignmentRequest) {
+        String assignmentName = assignmentRequest.getAssignmentName();
+        if (assignmentName == null || assignmentName.isBlank()) {
+            throw new ApplicationException(ExceptionMessageCode.ASSIGNMENT_NAME_EMPTY);
+        }
+
+        List<QuestionDTO> questionList = assignmentRequest.getQuestionList();
+        if (questionList == null || questionList.isEmpty()) {
+            throw new ApplicationException(ExceptionMessageCode.ASSIGNMENT_EMPTY);
+        }
+
+        for (int questionIndex = 0; questionIndex < questionList.size(); questionIndex++) {
+            QuestionDTO questionDTO = questionList.get(questionIndex);
+            String questionContent = questionDTO.getQuestionContent();
+
+            if (questionContent == null || questionContent.isBlank()) {
+                throw new ApplicationException(ExceptionMessageCode.QUESTION_CONTENT_EMPTY);
+            }
+
+            List<AnswerDTO> answerList = questionDTO.getAnswerList();
+            if (answerList == null || answerList.isEmpty()) {
+                throw new ApplicationException(ExceptionMessageCode.QUESTION_EMPTY);
+            }
+
+            boolean hasCorrectAnswer = false;
+            for (int answerIndex = 0; answerIndex < answerList.size(); answerIndex++) {
+                AnswerDTO answerDTO = answerList.get(answerIndex);
+                String answerContent = answerDTO.getAnswerContent();
+
+                if (answerContent == null || answerContent.isBlank()) {
+                    throw new ApplicationException(ExceptionMessageCode.ANSWER_EMPTY);
+                }
+
+                if (answerDTO.isCorrect()) {
+                    hasCorrectAnswer = true;
+                }
+            }
+            if (!hasCorrectAnswer) {
+                throw new ApplicationException(ExceptionMessageCode.QUESTION_CORRECT_ANSWER_NOT_FOUND);
+            }
+        }
+    }
+
+    public AssignmentResponse createNewAssignment(AssignmentRequest assignmentRequest) {
+        validateAssignmentRequest(assignmentRequest);
+
+        AssignmentEntity newAssignmentEntity = assignmentMapper.toAssignment(assignmentRequest);
+        newAssignmentEntity.setTeacher(userService.findCurrentUser());
+        newAssignmentEntity.setCreatedAt(LocalDateTime.now());
+
+        assignmentRepository.save(newAssignmentEntity);
 
         if (assignmentRequest.getQuestionList() == null) {
             throw new ApplicationException(ExceptionMessageCode.QUESTION_EMPTY);
@@ -61,38 +101,32 @@ public class AssignmentService {
 
         int order = 1;
         for (QuestionDTO questionRequest : assignmentRequest.getQuestionList()) {
-            Question question = questionService.saveQuestionWithAnswer(questionRequest);
+            QuestionEntity questionEntity = questionService.saveQuestionWithAnswer(questionRequest);
             AssignmentQuestionEntity assignmentQuestionEntity = AssignmentQuestionEntity.builder()
-                    .assignment(newAssignment)
-                    .question(question)
+                    .assignmentEntity(newAssignmentEntity)
+                    .questionEntity(questionEntity)
                     .questionOrder(order++)
                     .build();
             assignmentQuestionRepository.save(assignmentQuestionEntity);
         }
-        return assignmentMapper.toAssignmentInfoResponse(newAssignment);
+        return assignmentMapper.toAssignmentInfoResponse(newAssignmentEntity);
     }
 
-    private boolean hasAccessToAssignment(UserEntity userEntity, Assignment assignment) {
+    private boolean hasAccessToAssignment(UserEntity userEntity, AssignmentEntity assignmentEntity) {
         List<Role> roles = userEntity.getRoles();
 
         if (roles.contains(Role.ADMIN)) {
             return true;
         }
-
         if (roles.contains(Role.TEACHER)) {
-            String currentUserId = userEntity.getUserId();
-            String assignmentOwnerId = assignment.getTeacher().getUserId();
-            return currentUserId.equals(assignmentOwnerId);
+            return assignmentEntity.getTeacher().getUserId().equals(userEntity.getUserId());
         }
-
         if (roles.contains(Role.STUDENT)) {
-            for (ClassroomEntity classroomEntity : userEntity.getClassroomEntities()) {
-                for (AssignmentClassroomEntity ac : classroomEntity.getAssignmentList()) {
-                    if (ac.getAssignment().getAssignmentId().equals(assignment.getAssignmentId())) {
-                        return true;
-                    }
-                }
-            }
+            return userEntity.getClassroomList().stream()
+                    .map(ClassroomStudentEntity::getClassroomEntity)
+                    .flatMap(classroom -> classroom.getAssignmentList().stream())
+                    .anyMatch(ac -> ac.getAssignmentEntity().getAssignmentId()
+                            .equals(assignmentEntity.getAssignmentId()));
         }
 
         return false;
@@ -100,117 +134,66 @@ public class AssignmentService {
 
     public AssignmentResponse getAssignmentInfo(String assignmentId) {
         UserEntity currentUserEntity = userService.findCurrentUser();
-        Assignment assignment = findAssignmentById(assignmentId);
-        if (!hasAccessToAssignment(currentUserEntity, assignment)) {
-            log.warn("Unauthorized access attempt by user {} to assignment {}", currentUserEntity.getUserId(), assignmentId);
+        AssignmentEntity assignmentEntity = findAssignmentById(assignmentId);
+        if (!hasAccessToAssignment(currentUserEntity, assignmentEntity)) {
+            log.warn("Unauthorized access attempt by user {} to assignmentEntity {}", currentUserEntity.getUserId(), assignmentId);
             throw new ApplicationException(ExceptionMessageCode.UNAUTHORIZED_ACCESS);
         }
-        return assignmentMapper.toAssignmentInfoResponse(assignment);
+        return assignmentMapper.toAssignmentInfoResponse(assignmentEntity);
     }
 
-    public Page<QuestionDTO> getAssignmentContent(String assignmentId, int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
+    public Page<QuestionDTO> getAssignmentQuestions(String assignmentId, int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
         UserEntity currentUserEntity = userService.findCurrentUser();
-        Assignment assignment = findAssignmentById(assignmentId);
+        AssignmentEntity assignmentEntity = findAssignmentById(assignmentId);
         Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
-        if (!hasAccessToAssignment(currentUserEntity, assignment)) {
-            log.warn("Unauthorized access attempt by user {} to assignment {}", currentUserEntity.getUserId(), assignmentId);
+        if (!hasAccessToAssignment(currentUserEntity, assignmentEntity)) {
+            log.warn("Unauthorized access attempt by user {} to assignmentEntity {}", currentUserEntity.getUserId(), assignmentId);
             throw new ApplicationException(ExceptionMessageCode.UNAUTHORIZED_ACCESS);
         }
         Page<AssignmentQuestionEntity> questionPage;
         if (keyword == null || keyword.isBlank()) {
-            questionPage = assignmentQuestionRepository.findByAssignment(assignment, pageable);
+            questionPage = assignmentQuestionRepository.findByAssignmentEntity(assignmentEntity, pageable);
         } else
-            questionPage = assignmentQuestionRepository.findByAssignmentAndQuestion_QuestionContentContainingIgnoreCase(assignment, keyword, pageable);
+            questionPage = assignmentQuestionRepository.findByAssignmentEntityAndQuestionEntity_QuestionContentContainingIgnoreCase(assignmentEntity, keyword, pageable);
         return questionPage.map(questionMapper::toQuestionDTO);
     }
 
-    public AssignmentResponse updateAssignmentInfo(String assignmentId, AssignmentRequest assignmentRequest) {
-        Assignment assignment = findAssignmentById(assignmentId);
-        assignment.setAssignmentName(assignmentRequest.getAssignmentName());
-        assignment.setDescription(assignmentRequest.getDescription());
-        assignment.setStartTime(assignment.getStartTime());
-        assignment.setEndTime(assignment.getEndTime());
-        assignmentRepository.save(assignment);
-        return assignmentMapper.toAssignmentInfoResponse(assignment);
+    public void updateAssignmentInfo(String assignmentId, AssignmentRequest assignmentRequest) {
+        AssignmentEntity assignmentEntity = findAssignmentById(assignmentId);
+
+        assignmentEntity.setAssignmentName(assignmentRequest.getAssignmentName());
+        assignmentEntity.setDescription(assignmentRequest.getDescription());
+        assignmentRepository.save(assignmentEntity);
+
+        for (QuestionDTO questionRequest : assignmentRequest.getQuestionList()) {
+            questionService.updateQuestionWithAnswer(questionRequest);
+        }
+        log.info("Cập nhật bài tập {} thành công", assignmentId);
     }
 
     public Page<AssignmentResponse> getAllAssignmentsByCurrentTeacher(int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
         UserEntity currentTeacher = userService.findCurrentUser();
         Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
-        Page<Assignment> assignmentPage = assignmentRepository
+        Page<AssignmentEntity> assignmentPage = assignmentRepository
                 .findByTeacherAndAssignmentNameContainingIgnoreCase(currentTeacher, keyword, pageable);
         return assignmentPage.map(assignmentMapper::toAssignmentInfoResponse);
     }
 
     public void deleteAssignment(String assignmentId) {
-        Assignment assignment = findAssignmentById(assignmentId);
+        AssignmentEntity assignmentEntity = findAssignmentById(assignmentId);
 
-        List<Question> questionsToCheck = assignment.getQuestionList().stream()
-                .map(AssignmentQuestionEntity::getQuestion)
+        List<QuestionEntity> questionsToCheck = assignmentEntity.getQuestionList().stream()
+                .map(AssignmentQuestionEntity::getQuestionEntity)
                 .distinct()
                 .toList();
 
-        assignmentRepository.delete(assignment);
+        assignmentRepository.delete(assignmentEntity);
 
-        for (Question question : questionsToCheck) {
-            long count = assignmentQuestionRepository.countByQuestion(question);
+        for (QuestionEntity questionEntity : questionsToCheck) {
+            long count = assignmentQuestionRepository.countByQuestionEntity(questionEntity);
             if (count == 0) {
-                questionService.deleteQuestion(question);
+                questionService.deleteQuestion(questionEntity);
             }
         }
     }
-
-    public void attachAssignmentToClassrooms(String assignmentId, AssignmentClassroomRequest assignmentClassroomRequest) {
-        Assignment assignment = findAssignmentById(assignmentId);
-
-        for (String classroomId : assignmentClassroomRequest.getClassroomIdList()) {
-            ClassroomEntity classroomEntity = classroomService.findClassroomByIdAndCurrentUserRole(classroomId);
-
-            boolean alreadyAssigned = assignment.getClassroomList().stream()
-                    .anyMatch(ac -> ac.getClassroomEntity().equals(classroomEntity));
-
-            if (!alreadyAssigned) {
-                AssignmentClassroomEntity assignmentClassroomEntity = AssignmentClassroomEntity.builder()
-                        .assignment(assignment)
-                        .classroomEntity(classroomEntity)
-                        .assignedTime(LocalDateTime.now())
-                        .status(AssignmentStatus.ASSIGNED)
-                        .build();
-
-                assignmentClassroomRepository.save(assignmentClassroomEntity);
-
-                assignment.getClassroomList().add(assignmentClassroomEntity);
-            }
-        }
-        assignmentRepository.save(assignment);
-    }
-
-    public void detachAssignmentFromClassroom(String classroomId, String assignmentId) {
-        ClassroomEntity classroomEntity = classroomService.findClassroomById(classroomId);
-        Assignment assignment = findAssignmentById(assignmentId);
-
-        AssignmentClassroomEntity assignmentClassroomEntityToRemove = null;
-
-        for (AssignmentClassroomEntity ac : classroomEntity.getAssignmentList()) {
-            if (ac.getAssignment().equals(assignment)) {
-                assignmentClassroomEntityToRemove = ac;
-                break;
-            }
-        }
-
-        if (assignmentClassroomEntityToRemove != null) {
-            classroomEntity.getAssignmentList().remove(assignmentClassroomEntityToRemove);
-            assignment.getClassroomList().remove(assignmentClassroomEntityToRemove);
-
-            assignmentClassroomRepository.delete(assignmentClassroomEntityToRemove);
-
-            assignmentRepository.save(assignment);
-        } else {
-            throw new ApplicationException(ExceptionMessageCode.CLASSROOM_NOT_ASSOCIATED_WITH_ASSIGNMENT);
-        }
-    }
-
-
-
-
 }

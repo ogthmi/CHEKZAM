@@ -1,7 +1,7 @@
 package com.ogthmi.chekzam.module.question;
 
 import com.ogthmi.chekzam.module.answer.AnswerDTO;
-import com.ogthmi.chekzam.module.answer.Answer;
+import com.ogthmi.chekzam.module.answer.AnswerEntity;
 import com.ogthmi.chekzam.module.answer.AnswerMapper;
 import com.ogthmi.chekzam.module.assignment_question.AssignmentQuestionEntity;
 import org.springframework.stereotype.Component;
@@ -17,34 +17,35 @@ public class QuestionMapper {
         this.answerMapper = answerMapper;
     }
 
-    public Question toQuestion(QuestionDTO questionDTO) {
-        List<Answer> answers = null;
+    public QuestionEntity toQuestion(QuestionDTO questionDTO) {
+        List<AnswerEntity> answerEntities = null;
         if (questionDTO.getAnswerList() != null) {
-            answers = questionDTO.getAnswerList().stream()
+            answerEntities = questionDTO.getAnswerList().stream()
                     .map(answerMapper::toAnswer)
                     .collect(Collectors.toList());
         }
 
-        return Question.builder()
+        return QuestionEntity.builder()
+                .questionId(questionDTO.getQuestionId()) // <-- THÊM DÒNG NÀY
                 .questionContent(questionDTO.getQuestionContent())
-                .answerList(answers)
+                .answerEntityList(answerEntities)
                 .build();
     }
 
     public QuestionDTO toQuestionDTO(AssignmentQuestionEntity assignmentQuestionEntity) {
-        Question question = assignmentQuestionEntity.getQuestion();
+        QuestionEntity questionEntity = assignmentQuestionEntity.getQuestionEntity();
 
         List<AnswerDTO> answerDTOList = null;
-        if (question.getAnswerList() != null) {
-            answerDTOList = question.getAnswerList().stream()
+        if (questionEntity.getAnswerEntityList() != null) {
+            answerDTOList = questionEntity.getAnswerEntityList().stream()
                     .map(answerMapper::toAnswerDTO)
                     .toList();
         }
 
         return QuestionDTO.builder()
-                .questionId(question.getQuestionId())
+                .questionId(questionEntity.getQuestionId())
                 .questionOrder(assignmentQuestionEntity.getQuestionOrder())
-                .questionContent(question.getQuestionContent())
+                .questionContent(questionEntity.getQuestionContent())
                 .answerList(answerDTOList)
                 .build();
     }

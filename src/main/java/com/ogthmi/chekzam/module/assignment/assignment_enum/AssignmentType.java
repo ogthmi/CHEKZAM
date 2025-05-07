@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum AssignmentType {
     SINGLE_CHOICE("Trắc nghiệm một áp án"),
-    MULTIPLE_CHOICE("Trắc nghiệm nhiều đáp án"),
-;
-    private final String assignmentType;
+    MULTIPLE_CHOICE("Trắc nghiệm nhiều đáp án");
+
+    private final String description;
 }

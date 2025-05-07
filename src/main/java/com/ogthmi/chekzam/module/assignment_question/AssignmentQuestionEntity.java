@@ -1,7 +1,7 @@
 package com.ogthmi.chekzam.module.assignment_question;
 
-import com.ogthmi.chekzam.module.assignment.Assignment;
-import com.ogthmi.chekzam.module.question.Question;
+import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
+import com.ogthmi.chekzam.module.question.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +20,12 @@ public class AssignmentQuestionEntity {
     @Id
     @ManyToOne
     @JoinColumn(name = "assignment_id")
-    private Assignment assignment;
+    private AssignmentEntity assignmentEntity;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "question_id")
-    private Question question;
+    private QuestionEntity questionEntity;
 
     @Column(name = "question_order")
     private int questionOrder;

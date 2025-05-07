@@ -25,7 +25,7 @@ public class Endpoint {
     }
 
     public static class Classroom {
-        public static final String ROOT = API + "/classroomEntity";
+        public static final String ROOT = API + "/classroom";
         public static final String GET_ALL = "/all";
         public static final String GET_ONE = "/{classroomId}";
         public static final String MEMBER = GET_ONE + "/member";
@@ -45,7 +45,7 @@ public class Endpoint {
         public static final String ROOT = API + "/assignment";
         public static final String GET_ALL = "/all";
         public static final String GET_ONE = "/{assignmentId}";
-        public static final String ASSIGNED_CLASSROOM = GET_ONE + "/classroomEntity";
+        public static final String ASSIGNED_CLASSROOM = GET_ONE + "/classroom";
         public static final String QUESTION = GET_ONE + "/question";
     }
 

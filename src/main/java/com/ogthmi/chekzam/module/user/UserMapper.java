@@ -49,7 +49,6 @@ public class UserMapper {
                 .school(userInfoRequest.getSchool())
                 .department(userInfoRequest.getDepartment())
                 .email(userInfoRequest.getEmail())
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

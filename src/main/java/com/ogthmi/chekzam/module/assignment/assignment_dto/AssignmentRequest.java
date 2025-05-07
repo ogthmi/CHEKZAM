@@ -24,14 +24,6 @@ public class AssignmentRequest {
     private String description;
 
     private AssignmentType assignmentType;
-    private int duration;
-    private int maxAttempts;
-
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    private LocalDateTime startTime;
-
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    private LocalDateTime endTime;
 
     private List<QuestionDTO> questionList;
 }

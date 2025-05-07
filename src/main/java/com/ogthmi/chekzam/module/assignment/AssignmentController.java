@@ -2,7 +2,6 @@ package com.ogthmi.chekzam.module.assignment;
 
 import com.ogthmi.chekzam.common.Endpoint;
 import com.ogthmi.chekzam.common.ApiResponse;
-import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomRequest;
 import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentRequest;
 import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentResponse;
 import com.ogthmi.chekzam.module.question.QuestionDTO;
@@ -40,21 +39,21 @@ public class AssignmentController {
             @PathVariable String assignmentId,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "5") int pageSize,
-            @RequestParam(defaultValue = "") String sortBy,
+            @RequestParam(defaultValue = "questionOrder") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(required = false) String keyword
     ){
         return ApiResponse.success(
-                assignmentService.getAssignmentContent(assignmentId, pageNumber, pageSize, sortBy, direction, keyword),
+                assignmentService.getAssignmentQuestions(assignmentId, pageNumber, pageSize, sortBy, direction, keyword),
                 SuccessMessageCode.FETCHED_SUCCESSFULLY
         );
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @PostMapping(Endpoint.Assignment.ASSIGNED_CLASSROOM)
-    public ApiResponse<Void> assignAssignmentToClassroom(@PathVariable String assignmentId, @RequestBody AssignmentClassroomRequest assignmentClassroomRequest) {
-        assignmentService.attachAssignmentToClassrooms(assignmentId, assignmentClassroomRequest);
-        return ApiResponse.voidSuccess(SuccessMessageCode.ASSIGNED_SUCCESSFULLY);
+    @PutMapping (Endpoint.Assignment.GET_ONE)
+    public ApiResponse<Void> updateAssignmentInfo (@PathVariable String assignmentId, @RequestBody AssignmentRequest assignmentRequest){
+        assignmentService.updateAssignmentInfo(assignmentId, assignmentRequest);
+        return ApiResponse.voidSuccess(SuccessMessageCode.UPDATED_SUCCESSFULLY);
     }
 
     @PreAuthorize("hasRole('TEACHER')")
