@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@IdClass(AssignmentClassroomEntity.class)
+@IdClass(AssignmentClassroomId.class)
 public class AssignmentClassroomEntity {
 
     @Id
@@ -36,22 +36,9 @@ public class AssignmentClassroomEntity {
         }
     }
 
+    private int duration; //MINUTES
+    private int maxAttempts;
+
     private LocalDateTime openTime;
     private LocalDateTime dueTime;
-
-    @Enumerated(EnumType.STRING)
-    private AssignmentStatus status;
-
-    public AssignmentStatus getDynamicStatus() {
-        LocalDateTime now = LocalDateTime.now();
-        if (dueTime != null && now.isAfter(dueTime)) {
-            return AssignmentStatus.CLOSED;
-        }
-
-        if (openTime != null && now.isBefore(openTime)) {
-            return AssignmentStatus.NOT_YET_OPENED;
-        }
-
-        return AssignmentStatus.OPEN;
-    }
 }

@@ -7,12 +7,29 @@ import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface AssignmentClassroomRepository extends JpaRepository <AssignmentClassroomEntity, AssignmentClassroomId> {
-    Page<AssignmentClassroomEntity> findByAssignmentEntity_AssignmentIdAndClassroomEntity_ClassroomNameContainingIgnoreCase(String assignmentId, String classroomName, Pageable pageable);
-    Page<AssignmentClassroomEntity> findByClassroomEntity_ClassroomIdAndAssignmentEntity_AssignmentNameContainingIgnoreCase(String classroomId, String assignmentName, Pageable pageable);
-    void deleteByAssignmentEntityAndClassroomEntity(AssignmentEntity assignmentEntity, ClassroomEntity classroomEntity);
+public interface AssignmentClassroomRepository extends JpaRepository<AssignmentClassroomEntity, AssignmentClassroomId> {
+
+    @Query("SELECT ace FROM AssignmentClassroomEntity ace " +
+            "JOIN ace.assignmentEntity a " +
+            "WHERE ace.classroomEntity = :classroom " +
+            "ORDER BY LOWER(a.assignmentName) ASC")
+    Page<AssignmentClassroomEntity> findAllSortedByAssignmentName(
+            @Param("classroom") ClassroomEntity classroom,
+            Pageable pageable
+    );
+
+    Page<AssignmentClassroomEntity> findByClassroomEntity_ClassroomId(String classroomId, Pageable pageable);
+
+    Page<AssignmentClassroomEntity> findByClassroomEntity_ClassroomIdAndAssignmentEntity_AssignmentNameContainingIgnoreCase(String classroomId, String keyword, Pageable pageable);
+
     boolean existsByAssignmentEntityAndClassroomEntity(AssignmentEntity assignmentEntity, ClassroomEntity classroomEntity);
+
+    Optional<AssignmentClassroomEntity> findByAssignmentEntity_AssignmentIdAndClassroomEntity_ClassroomId(String assignmentId, String classroomId);
 }

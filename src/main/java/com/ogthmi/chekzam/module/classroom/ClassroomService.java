@@ -1,11 +1,9 @@
 package com.ogthmi.chekzam.module.classroom;
 
-import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
 import com.ogthmi.chekzam.module.classroom_student.ClassroomStudentRepository;
 import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
 import com.ogthmi.chekzam.module.user.UserEntity;
 import com.ogthmi.chekzam.module.user.user_enum.Role;
-import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentResponse;
 import com.ogthmi.chekzam.module.classroom.classroom_dto.ClassroomInfoRequest;
 import com.ogthmi.chekzam.module.classroom.classroom_dto.ClassroomInfoResponse;
 import com.ogthmi.chekzam.common.exception.ApplicationException;
@@ -133,21 +131,4 @@ public class ClassroomService {
         classroomRepository.delete(classroomEntity);
         log.info("Xóa thành công lớp {}", classroomId);
     }
-
-    public Page<AssignmentResponse> getAllAssignmentInClassroom(
-            String classroomId, int pageNumber, int pageSize, String sortBy, String direction, String keyword
-    ) {
-        Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
-        Page<AssignmentEntity> assignmentPage;
-
-        if (keyword == null || keyword.isEmpty()) {
-            assignmentPage = assignmentRepository.findByClassroomList_ClassroomEntity_ClassroomId(classroomId, pageable);
-        } else {
-            assignmentPage = assignmentRepository.findByClassroomList_ClassroomEntity_ClassroomIdAndAssignmentNameContainingIgnoreCase(
-                    classroomId, keyword, pageable);
-        }
-
-        return assignmentPage.map(assignmentMapper::toAssignmentInfoResponse);
-    }
-
 }

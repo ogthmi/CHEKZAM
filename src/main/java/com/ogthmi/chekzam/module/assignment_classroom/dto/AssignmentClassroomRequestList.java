@@ -1,6 +1,6 @@
 package com.ogthmi.chekzam.module.assignment_classroom.dto;
 
-import com.ogthmi.chekzam.module.assignment.assignment_enum.AssignmentStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,19 +12,24 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentClassroomRequest {
-    private List<AssignmentClassroomRecord> assignmentClassroomRecordList;
+public class AssignmentClassroomRequestList {
+    private List<AssignmentClassroomRequest> assignmentClassroomRequestList;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class AssignmentClassroomRecord {
+    public static class AssignmentClassroomRequest {
         private String assignmentId;
         private String classroomId;
+        private int duration; //MINUTES
+        private int maxAttempts;
+
+        @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
         private LocalDateTime openTime;
+
+        @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
         private LocalDateTime dueTime;
-        private AssignmentStatus status;
     }
 }
 

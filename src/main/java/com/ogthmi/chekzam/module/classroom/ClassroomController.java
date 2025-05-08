@@ -70,21 +70,6 @@ public class ClassroomController {
     }
 
 
-    @GetMapping(Endpoint.Classroom.GET_ALL_ASSIGNMENTS)
-    public ApiResponse<Page<AssignmentResponse>> getAllAssignmentInClassroom(
-            @PathVariable String classroomId,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "5") int pageSize,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String keyword
-    ) {
-        return ApiResponse.success(
-                classroomService.getAllAssignmentInClassroom(classroomId, pageNumber, pageSize, sortBy, direction, keyword),
-                SuccessMessageCode.FETCHED_SUCCESSFULLY
-        );
-    }
-
 //    @PreAuthorize("hasRole('TEACHER')")
 //    @DeleteMapping(Endpoint.Classroom.GET_ONE_ASSIGNMENT)
 //    public ApiResponse<Void> detachAssignmentFromCLassroom(
