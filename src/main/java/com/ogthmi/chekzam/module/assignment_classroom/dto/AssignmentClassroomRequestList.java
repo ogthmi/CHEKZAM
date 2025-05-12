@@ -24,6 +24,7 @@ public class AssignmentClassroomRequestList {
         private String classroomId;
         private int duration; //MINUTES
         private int maxAttempts;
+        private boolean isShuffleEnabled;
 
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
         private LocalDateTime openTime;

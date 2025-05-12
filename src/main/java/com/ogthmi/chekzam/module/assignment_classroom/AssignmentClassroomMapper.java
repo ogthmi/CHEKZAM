@@ -2,7 +2,6 @@ package com.ogthmi.chekzam.module.assignment_classroom;
 
 import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
 import com.ogthmi.chekzam.module.assignment.AssignmentMapper;
-import com.ogthmi.chekzam.module.assignment.assignment_dto.AssignmentResponse;
 import com.ogthmi.chekzam.module.assignment_classroom.dto.AssignmentClassroomRequestList;
 import com.ogthmi.chekzam.module.assignment_classroom.dto.AttachedAssignmentDTO;
 import com.ogthmi.chekzam.module.assignment_classroom.entity.AssignmentClassroomEntity;
@@ -25,23 +24,52 @@ public class AssignmentClassroomMapper {
         return AssignmentClassroomEntity.builder()
                 .classroomEntity(classroomEntity)
                 .assignmentEntity(assignmentEntity)
+                .maxAttempts(record.getMaxAttempts())
+                .duration(record.getDuration())
+                .isShuffleEnable(record.isShuffleEnabled())
                 .openTime(record.getOpenTime())
                 .dueTime(record.getDueTime())
-                .duration(record.getDuration())
-                .maxAttempts(record.getMaxAttempts())
                 .build();
     }
 
     public AttachedAssignmentDTO toAssignmentClassroomResponse(
-            AssignmentClassroomEntity assignmentClassroomEntity ) {
-        AssignmentResponse assignmentResponse = assignmentMapper.toAssignmentInfoResponse(assignmentClassroomEntity.getAssignmentEntity());
-        return AttachedAssignmentDTO.builder()
-                .assignment(assignmentResponse)
-                .duration(assignmentClassroomEntity.getDuration())
-                .maxAttempts(assignmentClassroomEntity.getMaxAttempts())
-                .assignedTime(assignmentClassroomEntity.getAssignedTime())
-                .openTime(assignmentClassroomEntity.getOpenTime())
-                .dueTime(assignmentClassroomEntity.getDueTime())
-                .build();
+            AssignmentClassroomEntity entity, String needField) {
+
+        AttachedAssignmentDTO.AttachedAssignmentDTOBuilder builder = AttachedAssignmentDTO.builder()
+                .duration(entity.getDuration())
+                .maxAttempts(entity.getMaxAttempts())
+                .isShuffleEnabled(entity.isShuffleEnable())
+                .assignedTime(entity.getAssignedTime())
+                .openTime(entity.getOpenTime())
+                .dueTime(entity.getDueTime());
+
+        if ("assignment".equalsIgnoreCase(needField)) {
+            fillAssignmentFields(builder, entity.getAssignmentEntity());
+        }
+
+        if ("classroom".equalsIgnoreCase(needField)) {
+            fillClassroomFields(builder, entity.getClassroomEntity());
+        }
+
+        return builder.build();
     }
+
+    private void fillAssignmentFields(AttachedAssignmentDTO.AttachedAssignmentDTOBuilder builder,
+                                      AssignmentEntity assignment) {
+        builder.assignmentId(assignment.getAssignmentId())
+                .assignmentName(assignment.getAssignmentName())
+                .description(assignment.getDescription())
+                .assignmentType(assignment.getAssignmentType());
+
+        if (assignment.getQuestionList() != null) {
+            builder.totalQuestions(assignment.getQuestionList().size());
+        }
+    }
+
+    private void fillClassroomFields(AttachedAssignmentDTO.AttachedAssignmentDTOBuilder builder,
+                                     ClassroomEntity classroom) {
+        builder.classroomId(classroom.getClassroomId())
+                .classroomName(classroom.getClassroomName());
+    }
+
 }

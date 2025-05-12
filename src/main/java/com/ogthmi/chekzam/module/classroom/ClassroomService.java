@@ -1,5 +1,8 @@
 package com.ogthmi.chekzam.module.classroom;
 
+import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
+import com.ogthmi.chekzam.module.assignment_classroom.AssignmentClassroomRepository;
+import com.ogthmi.chekzam.module.assignment_classroom.entity.AssignmentClassroomEntity;
 import com.ogthmi.chekzam.module.classroom_student.ClassroomStudentRepository;
 import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
 import com.ogthmi.chekzam.module.user.UserEntity;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +34,7 @@ public class ClassroomService {
     private final ClassroomStudentRepository classroomStudentRepository;
     private final UserService userService;
     private final ClassroomMapper classroomMapper;
-    private final AssignmentRepository assignmentRepository;
+    private final AssignmentClassroomRepository assignmentClassroomRepository;
     private final AssignmentMapper assignmentMapper;
 
 
@@ -126,9 +130,31 @@ public class ClassroomService {
         return classroomMapper.toClassroomResponse(classroomEntity);
     }
 
+    @Transactional
     public void deleteClassroom(String classroomId) {
         ClassroomEntity classroomEntity = findClassroomByIdAndCurrentUserRole(classroomId);
+
+        // Xóa học sinh
+        List<ClassroomStudentEntity> studentEntities = classroomStudentRepository.findByClassroomEntity(classroomEntity);
+        if (!studentEntities.isEmpty()) {
+            classroomStudentRepository.deleteAll(studentEntities); // Xóa bản ghi con
+        }
+
+        // Xóa bài tập
+        List<AssignmentClassroomEntity> assignmentClassroom = assignmentClassroomRepository.findByClassroomEntity(classroomEntity);
+        if (!assignmentClassroom.isEmpty()) {
+            assignmentClassroomRepository.deleteAll(assignmentClassroom); // Xóa bản ghi con
+        }
+
+        // Gỡ liên kết khỏi lớp học (tránh JPA lỗi trạng thái)
+        classroomEntity.setStudentList(null);
+        classroomEntity.setAssignmentList(null);
+
+        // Xóa lớp học
         classroomRepository.delete(classroomEntity);
+
         log.info("Xóa thành công lớp {}", classroomId);
     }
+
+
 }
