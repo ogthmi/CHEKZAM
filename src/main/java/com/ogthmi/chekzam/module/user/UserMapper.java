@@ -30,7 +30,7 @@ public class UserMapper {
                 .roles(userEntity.getRoles())
                 .email(userEntity.getEmail())
                 .birthdate(userEntity.getBirthdate())
-                .gender(userEntity.getGender().getGenderName())
+                .gender(userEntity.getGender())
                 .school(userEntity.getSchool())
                 .department(userEntity.getDepartment())
                 .createdAt(userEntity.getCreatedAt())

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,10 +37,10 @@ public class ClassroomEntity {
     private UserEntity teacher;
 
     @OneToMany(mappedBy = "classroomEntity", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<ClassroomStudentEntity> studentList;
+    private List<ClassroomStudentEntity> studentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "classroomEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AssignmentClassroomEntity> assignmentList;
+    private List<AssignmentClassroomEntity> assignmentList = new ArrayList<>();
 
     @PrePersist
     public void generateId() {

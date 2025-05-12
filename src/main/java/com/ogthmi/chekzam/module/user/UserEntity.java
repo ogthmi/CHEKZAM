@@ -1,6 +1,7 @@
 package com.ogthmi.chekzam.module.user;
 
 import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
+import com.ogthmi.chekzam.module.submission.SubmissionEntity;
 import com.ogthmi.chekzam.module.user.user_enum.Gender;
 import com.ogthmi.chekzam.module.user.user_enum.Role;
 import com.ogthmi.chekzam.common.util.IdGenerator;
@@ -60,6 +61,9 @@ public class UserEntity {
 
     @OneToMany (mappedBy = "userEntity")
     private List<ClassroomStudentEntity> classroomList;
+
+    @OneToMany (mappedBy = "student")
+    private List<SubmissionEntity> submissionList;
 
     @PrePersist
     public void onCreate(){

@@ -1,7 +1,6 @@
 package com.ogthmi.chekzam.module.assignment_classroom.entity;
 
 import com.ogthmi.chekzam.module.assignment.AssignmentEntity;
-import com.ogthmi.chekzam.module.assignment.assignment_enum.AssignmentStatus;
 import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +37,7 @@ public class AssignmentClassroomEntity {
 
     private int duration; //MINUTES
     private int maxAttempts;
+    private boolean isShuffleEnable;
 
     private LocalDateTime openTime;
     private LocalDateTime dueTime;

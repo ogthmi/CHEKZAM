@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping(Endpoint.User.ROOT)
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class UserController {
     private final UserMapper userMapper;
     private final RegisterUserService registerUserService;
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(Endpoint.User.GET_ALL)
     public ApiResponse<Page<FullUserInfoResponse>> getAllUsers(
             @RequestParam(defaultValue = "0") int pageNumber,
@@ -67,11 +69,23 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/count")
+    public ApiResponse<HashMap<String, Long>> countUser (){
+        return ApiResponse.success(
+                userService.countUsersByRole(),
+                SuccessMessageCode.FETCHED_SUCCESSFULLY
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(Endpoint.User.GET_ONE)
     public ApiResponse<FullUserInfoResponse> updateProfile(
             @PathVariable String userId,
             @RequestBody UserInfoRequest userInfoRequest) {
-        return ApiResponse.success(userService.updateUserInfo(userId, userInfoRequest), SuccessMessageCode.UPDATED_SUCCESSFULLY);
+        return ApiResponse.success(
+                userService.updateUserInfo(userId, userInfoRequest),
+                SuccessMessageCode.UPDATED_SUCCESSFULLY
+        );
     }
 
     @PutMapping(Endpoint.User.GET_ME)

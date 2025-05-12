@@ -30,7 +30,7 @@ public class AnswerEntity {
     private QuestionEntity questionEntity;
 
     @Column(name = "answer_order")
-    private int answerOrder;
+    private Integer answerOrder;
 
 
     @PrePersist

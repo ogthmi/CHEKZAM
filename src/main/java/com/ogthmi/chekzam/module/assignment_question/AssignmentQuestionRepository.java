@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AssignmentQuestionRepository extends JpaRepository<AssignmentQuestionEntity, AssignmentQuestionId> {
 
@@ -18,4 +20,11 @@ public interface AssignmentQuestionRepository extends JpaRepository<AssignmentQu
             AssignmentEntity assignmentEntity, String keyword, Pageable pageable
     );
 
+    List<AssignmentQuestionEntity> findByAssignmentEntityAndQuestionEntity_QuestionContentContainingIgnoreCase(
+            AssignmentEntity assignmentEntity, String keyword
+    );
+
+    void deleteByAssignmentEntity_AssignmentIdAndQuestionEntity_QuestionId (String assignmentId, String questionId);
+
+    List<AssignmentQuestionEntity> findByAssignmentEntity_AssignmentId(String assignmentId);
 }

@@ -1,5 +1,6 @@
 package com.ogthmi.chekzam.module.user.user_dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ogthmi.chekzam.module.user.user_enum.Gender;
 import com.ogthmi.chekzam.module.user.user_enum.Role;
 import lombok.*;
@@ -16,6 +17,7 @@ public class UserInfoRequest {
     private String lastName;
     private Gender gender;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
 
     private Role role;

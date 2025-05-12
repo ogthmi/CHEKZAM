@@ -1,102 +1,64 @@
 package com.ogthmi.chekzam.module.question;
 
-import com.ogthmi.chekzam.module.answer.AnswerDTO;
-import com.ogthmi.chekzam.module.answer.AnswerEntity;
 import com.ogthmi.chekzam.common.exception.ApplicationException;
 import com.ogthmi.chekzam.common.message.ExceptionMessageCode;
-import com.ogthmi.chekzam.module.answer.AnswerMapper;
+import com.ogthmi.chekzam.module.answer.AnswerDTO;
+import com.ogthmi.chekzam.module.answer.AnswerEntity;
+import com.ogthmi.chekzam.module.answer.AnswerService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
-    private final AnswerMapper answerMapper;
+    private final AnswerService answerService;
 
-    public QuestionEntity saveQuestionWithAnswer(QuestionDTO questionRequest) {
-        QuestionEntity questionEntity = questionMapper.toQuestion(questionRequest);
-        if (questionEntity.getAnswerEntityList() == null || questionEntity.getAnswerEntityList().isEmpty()) {
+    public void validateQuestion(QuestionDTO<AnswerDTO> question) {
+        if (question.getQuestionContent() == null || question.getQuestionContent().isBlank()) {
+            throw new ApplicationException(ExceptionMessageCode.QUESTION_CONTENT_EMPTY);
+        }
+        if (question.getAnswerList() == null || question.getAnswerList().isEmpty()){
+            throw new ApplicationException(ExceptionMessageCode.QUESTION_EMPTY);
+        }
+        boolean hasCorrectAnswer = false;
+        for (AnswerDTO answerDTO: question.getAnswerList()){
+            if (answerDTO.getAnswerContent() == null || answerDTO.getAnswerContent().isEmpty()){
+                throw new ApplicationException(ExceptionMessageCode.ANSWER_EMPTY);
+            }
+            if (answerDTO.isCorrect()) hasCorrectAnswer = true;
+        }
+        if (!hasCorrectAnswer){
+            throw new ApplicationException(ExceptionMessageCode.QUESTION_CORRECT_ANSWER_NOT_FOUND);
+        }
+    }
+
+    public QuestionEntity findQuestionById(String questionId) {
+        return questionRepository.findById(questionId)
+                .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.QUESTION_NOT_FOUND));
+    }
+
+    @Transactional
+    public QuestionEntity saveQuestionWithAnswer(QuestionDTO<AnswerDTO> questionDTO) {
+        QuestionEntity question = questionMapper.toQuestion(questionDTO);
+        question.getAnswerEntityList().forEach(dto -> {
+            System.out.println("Answer Content: " + dto.getAnswerContent() + ", isCorrect: " + dto.isCorrect());
+        });
+        if (questionDTO.getAnswerList() == null || questionDTO.getAnswerList().isEmpty()) {
             throw new ApplicationException(ExceptionMessageCode.ANSWER_EMPTY);
         }
-        int order = 1;
-        for (AnswerEntity answerEntity : questionEntity.getAnswerEntityList()) {
-            answerEntity.setQuestionEntity(questionEntity);
-            answerEntity.setAnswerOrder(order++);
-        }
-        return questionRepository.save(questionEntity);
+
+        List<AnswerEntity> processedAnswers = answerService.processAnswers(questionDTO.getAnswerList(), question);
+        question.setAnswerEntityList(processedAnswers);
+
+        return questionRepository.save(question);
     }
 
-    public void updateQuestionWithAnswer(QuestionDTO questionDTO) {
-        QuestionEntity questionEntity;
-
-        if (questionDTO.getQuestionId() != null) {
-            // Cập nhật câu hỏi cũ
-            questionEntity = questionRepository.findById(questionDTO.getQuestionId())
-                    .orElseThrow(() -> new ApplicationException(ExceptionMessageCode.QUESTION_NOT_FOUND));
-            questionEntity.setQuestionContent(questionDTO.getQuestionContent());
-        } else {
-            // Tạo mới câu hỏi
-            questionEntity = new QuestionEntity();
-            questionEntity.setQuestionContent(questionDTO.getQuestionContent());
-            questionEntity.setAnswerEntityList(new ArrayList<>());
-        }
-
-        List<AnswerEntity> currentAnswers = questionEntity.getAnswerEntityList();
-        Map<String, AnswerEntity> currentAnswerMap = currentAnswers.stream()
-                .filter(a -> a.getAnswerId() != null)
-                .collect(Collectors.toMap(AnswerEntity::getAnswerId, a -> a));
-
-        List<AnswerEntity> updatedAnswers = new ArrayList<>();
-        int order = 1;
-
-        for (AnswerDTO answerDTO : questionDTO.getAnswerList()) {
-            AnswerEntity answer;
-
-            if (answerDTO.getAnswerId() != null && currentAnswerMap.containsKey(answerDTO.getAnswerId())) {
-                // Cập nhật đáp án cũ
-                answer = currentAnswerMap.get(answerDTO.getAnswerId());
-                answer.setAnswerContent(answerDTO.getAnswerContent());
-                answer.setCorrect(answerDTO.isCorrect());
-            } else {
-                // Tạo mới đáp án
-                answer = answerMapper.toAnswer(answerDTO); // Mapper không nên set ID
-                answer.setQuestionEntity(questionEntity);  // gắn quan hệ 2 chiều
-            }
-
-            answer.setAnswerOrder(order++);
-            updatedAnswers.add(answer);
-        }
-
-        // Xoá đáp án cũ không còn trong danh sách mới
-        Set<String> updatedIds = updatedAnswers.stream()
-                .map(AnswerEntity::getAnswerId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        List<AnswerEntity> toRemove = currentAnswers.stream()
-                .filter(a -> a.getAnswerId() != null && !updatedIds.contains(a.getAnswerId()))
-                .toList();
-
-        currentAnswers.removeAll(toRemove);
-
-        // Thêm hoặc cập nhật đáp án
-        for (AnswerEntity updated : updatedAnswers) {
-            if (!currentAnswers.contains(updated)) {
-                currentAnswers.add(updated);
-            }
-        }
-
-        questionEntity.setAnswerEntityList(currentAnswers);
-
-        questionRepository.save(questionEntity);
-    }
-
-    public void deleteQuestion (QuestionEntity questionEntity){
+    public void deleteQuestion(QuestionEntity questionEntity) {
         questionRepository.delete(questionEntity);
     }
 }

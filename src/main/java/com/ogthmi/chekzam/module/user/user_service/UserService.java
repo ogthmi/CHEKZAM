@@ -9,14 +9,15 @@ import com.ogthmi.chekzam.common.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.module.user.UserMapper;
 import com.ogthmi.chekzam.module.user.UserRepository;
 import com.ogthmi.chekzam.common.util.PaginationUtil;
+import com.ogthmi.chekzam.module.user.user_enum.Role;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -77,19 +78,95 @@ public class UserService {
         throw new ApplicationException(ExceptionMessageCode.USER_NOT_FOUND);
     }
 
+    public HashMap<String, Long> countUsersByRole(){
+        HashMap<String, Long> userCount = new HashMap<>();
+        userCount.put("totalUsers", userRepository.count());
+        userCount.put(Role.ADMIN.name().toLowerCase(), userRepository.countByRoleAdmin());
+        userCount.put(Role.TEACHER.name().toLowerCase().toLowerCase(), userRepository.countByRoleTeacher());
+        userCount.put(Role.STUDENT.name().toLowerCase(), userRepository.countByRoleStudent());
+        return userCount;
+    }
 
     public FullUserInfoResponse getMyUserProfile() {
         UserEntity currentUserEntity = findCurrentUser();
         return userMapper.toFullUserInfoResponse(currentUserEntity);
     }
 
-    public Page<FullUserInfoResponse> getAllUsers(int page, int size, String sortBy, String direction, String keyword) {
-        Pageable pageable = PaginationUtil.buildPageable(page, size, sortBy, direction);
-        Page<UserEntity> userPage = userRepository.findAll(pageable);
+    public Page<FullUserInfoResponse> getAllUsers(int pageNumber, int pageSize, String sortBy, String direction, String keyword) {
+        List<UserEntity> users;
+        Page<UserEntity> userPage;
 
-        // map mỗi UserEntity -> BasicUserInfoResponse và giữ nguyên phân trang
-        return userPage.map(userMapper::toFullUserInfoResponse);
+        if ("roles[0]".equals(sortBy)) {
+            // Lấy toàn bộ danh sách để sort thủ công
+            if (keyword == null || keyword.isEmpty()) {
+                users = userRepository.findAll();
+            } else {
+                users = userRepository.searchByFullName(keyword);
+            }
+
+            // Bản đồ ưu tiên theo vai trò
+            Map<String, Integer> rolePriority = Map.of(
+                    Role.ADMIN.name().toLowerCase(), 1,
+                    Role.TEACHER.name().toLowerCase(), 2,
+                    Role.STUDENT.name().toLowerCase(), 3
+            );
+
+            // Sort thủ công theo vai trò đầu tiên
+            users.sort((u1, u2) -> {
+                String roleName1 = (u1.getRoles() != null && !u1.getRoles().isEmpty()) ?
+                        u1.getRoles().get(0).name().toLowerCase() : "";
+                String roleName2 = (u2.getRoles() != null && !u2.getRoles().isEmpty()) ?
+                        u2.getRoles().get(0).name().toLowerCase() : "";
+
+                int rank1 = rolePriority.getOrDefault(roleName1, Integer.MAX_VALUE);
+                int rank2 = rolePriority.getOrDefault(roleName2, Integer.MAX_VALUE);
+
+                return Integer.compare(rank1, rank2);
+            });
+
+            if ("desc".equalsIgnoreCase(direction)) {
+                Collections.reverse(users);
+            }
+
+            // Thực hiện paging thủ công
+            int start = pageNumber * pageSize;
+            int end = Math.min(start + pageSize, users.size());
+            List<UserEntity> pagedUsers = users.subList(start, end);
+
+            List<FullUserInfoResponse> mapped = pagedUsers.stream()
+                    .map(userMapper::toFullUserInfoResponse)
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(mapped, PageRequest.of(pageNumber, pageSize), users.size());
+        } else {
+            Sort sort;
+
+            if ("fullName".equalsIgnoreCase(sortBy)) {
+                Sort firstnameSort = direction.equalsIgnoreCase("asc")
+                        ? Sort.by("firstName").ascending()
+                        : Sort.by("firstName").descending();
+
+                Sort lastnameSort = direction.equalsIgnoreCase("asc")
+                        ? Sort.by("lastName").ascending()
+                        : Sort.by("lastName").descending();
+
+                sort = firstnameSort.and(lastnameSort);
+            } else {
+                sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+            }
+
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+            if (keyword == null || keyword.isEmpty()) {
+                userPage = userRepository.findAll(pageable);
+            } else {
+                userPage = userRepository.searchByFullName(keyword, pageable);
+            }
+
+            return userPage.map(userMapper::toFullUserInfoResponse);
+        }
     }
+
 
     public FullUserInfoResponse updateUserInfo(String userId, UserInfoRequest userInfoRequest) {
         UserEntity userEntity = findUserById(userId);

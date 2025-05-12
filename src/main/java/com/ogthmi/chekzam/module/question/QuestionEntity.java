@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,6 +19,7 @@ import java.util.List;
 @Data
 public class QuestionEntity {
     @Id
+
     @Column(name = "question_id", nullable = false)
     private String questionId;
 
@@ -26,7 +28,7 @@ public class QuestionEntity {
 
     @OneToMany(mappedBy = "questionEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("answerOrder")
-    private List<AnswerEntity> answerEntityList;
+    private List<AnswerEntity> answerEntityList = new ArrayList<>();
 
     @PrePersist
     public void generatedId() {

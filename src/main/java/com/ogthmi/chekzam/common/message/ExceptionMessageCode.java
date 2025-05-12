@@ -36,13 +36,20 @@ public enum ExceptionMessageCode {
 
     ASSIGNMENT_NOT_FOUND (3101,"Không tìm thấy bài tập."),
     QUESTION_NOT_FOUND (3102,"Không tìm thấy câu hỏi"),
+    ANSWER_NOT_FOUND (3102,"Không tìm thấy câu trả lời"),
     ASSIGNMENT_NAME_EMPTY (3102,"Bài tập không có tên"),
     ASSIGNMENT_EMPTY (3102,"Bài tập không có câu hỏi"),
     QUESTION_CONTENT_EMPTY (3102,"Câu hỏi không có nội dung"),
     QUESTION_EMPTY (3102,"Câu hỏi không có đáp án"),
     QUESTION_CORRECT_ANSWER_NOT_FOUND (3102,"Câu hỏi không có đáp án đúng"),
+    ANSWER_NOT_BELONG_TO_QUESTION (3102,"Đáp án không thuộc về câu hỏi này"),
     ANSWER_EMPTY (3102,"Đáp án không có nội dung"),
     CLASSROOM_NOT_ASSOCIATED_WITH_ASSIGNMENT(3103,"Bài tập không được giao cho lớp học."),
+    MAX_ATTEMPTS_REACHED(3104, "Đã đạt số lần làm bài tối đa"),
+    ASSIGNMENT_NOT_YET_OPENED(3104, "Bài tập chưa đến giờ mở"),
+    ASSIGNMENT_ALREADY_CLOSED(3104, "Đã quá hạn làm bài tập"),
+
+    SUBMISSION_NOT_FOUND(3104, "Không tìm thấy lịch sủ nộp bài"),
     ;
     private final int code;
     private final String message;

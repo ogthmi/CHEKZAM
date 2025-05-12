@@ -60,7 +60,7 @@ public class ClassroomStudentController {
         return response;
     }
 
-    @PostMapping(Endpoint.Classroom.GET_ONE_MEMBER)
+    @PostMapping( "/{classroomId}/member/join")
     public ApiResponse<Void> joinClassroom (@PathVariable String classroomId){
         classroomStudentService.joinClassroom(classroomId);
         return ApiResponse.voidSuccess(SuccessMessageCode.ASSIGNED_SUCCESSFULLY);

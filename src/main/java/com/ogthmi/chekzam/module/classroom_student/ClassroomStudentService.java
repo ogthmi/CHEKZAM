@@ -4,7 +4,6 @@ import com.ogthmi.chekzam.common.exception.ApplicationException;
 import com.ogthmi.chekzam.common.message.ExceptionMessageCode;
 import com.ogthmi.chekzam.common.util.PaginationUtil;
 import com.ogthmi.chekzam.module.classroom.ClassroomEntity;
-import com.ogthmi.chekzam.module.classroom.ClassroomRepository;
 import com.ogthmi.chekzam.module.classroom.ClassroomService;
 import com.ogthmi.chekzam.module.classroom_student.dto.ClassroomStudentRequest;
 import com.ogthmi.chekzam.module.classroom_student.entity.ClassroomStudentEntity;
@@ -42,7 +41,12 @@ public class ClassroomStudentService {
             String classroomId, int pageNumber, int pageSize, String sortBy, String direction, String keyword
     ) {
         Pageable pageable = PaginationUtil.buildPageable(pageNumber, pageSize, sortBy, direction);
-        Page<UserEntity> students = userRepository.findByClassroomList_ClassroomEntity_ClassroomIdAndRolesContaining(classroomId, Role.STUDENT, pageable);
+        Page<UserEntity> students;
+        if (keyword == null || keyword.isEmpty()) {
+            students = userRepository.findByClassroomList_ClassroomEntity_ClassroomIdAndRolesContaining(classroomId, Role.STUDENT, pageable);
+        } else {
+            students = userRepository.searchByFullNameInClassroom(classroomId, Role.STUDENT, keyword, pageable);
+        }
         return students.map(userMapper::toFullUserInfoResponse);
     }
 
@@ -64,7 +68,7 @@ public class ClassroomStudentService {
                 currentClassroom.getClassroomId()
         );
     }
-    
+
     public void removeStudentFromClassroom(String classroomId, String studentId) {
         ClassroomEntity currentClassroom = classroomService.findClassroomByIdAndCurrentUserRole(classroomId);
         UserEntity student = userService.findUserById(studentId);

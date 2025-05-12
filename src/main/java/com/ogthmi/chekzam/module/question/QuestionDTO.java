@@ -1,6 +1,5 @@
 package com.ogthmi.chekzam.module.question;
 
-import com.ogthmi.chekzam.module.answer.AnswerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class QuestionDTO {
+public class QuestionDTO<T> {
     private String questionId;
-    private int questionOrder;
+    private Integer questionOrder;
     private String questionContent;
-    private List<AnswerDTO> answerList;
+    private List<T> answerList;
 }

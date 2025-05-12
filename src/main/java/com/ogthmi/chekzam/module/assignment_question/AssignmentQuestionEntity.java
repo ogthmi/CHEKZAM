@@ -28,7 +28,7 @@ public class AssignmentQuestionEntity {
     private QuestionEntity questionEntity;
 
     @Column(name = "question_order")
-    private int questionOrder;
+    private Integer questionOrder;
 }
 
 
