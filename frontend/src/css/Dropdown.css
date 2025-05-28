@@ -5,6 +5,7 @@
 .dropdown-menu {
     padding: 0.5rem;
     border-radius: 3px;
+    z-index: 1000;
 }
 
 .dropdown-item {

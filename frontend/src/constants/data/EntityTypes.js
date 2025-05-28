@@ -12,13 +12,28 @@ export const EntityTypes = {
     },
     user: {
         PROFILE: "USER_INFO",
+        COUNT: "USER_COUNT",
         MY_PROFILE: "USER_MY_INFO",
+        MY_PASSWORD: "USER_MY_PASSWORD",
         SEARCH: "USER_SEARCH",
+        DELETE: "USER_DELETE",
+        CREATE: "USER_CREATE",
     },
     assignment: {
         CREATE: "ASSIGNMENT_CREATE",
         INFO: "ASSIGNMENT_INFO",
         QUESTIONS: "ASSIGNMENT_QUESTIONS",
+        ATTACHED_CLASSROOM: "ASSIGNMENT_ATTACHED_CLASSROOM",
+        ATTACHED_INFO: "ASSIGNMENT_ATTACHED_INFO",
         FILE: "ASSIGNMENT_FILE",
-    }
+        SUBMISSION: "ASSIGNMENT_SUBMISSION",
+        DELETE: "ASSIGNMENT_DELETE"
+    },
+
+    submission: {
+        INFO: "SUBMISSION_INFO",
+        DETAILS: "SUBMISSION_DETAILS",
+        START: "SUBMISSION_START",
+        SUBMIT: "SUBMISSION_SUBMIT",
+    },
 };

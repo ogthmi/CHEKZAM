@@ -32,7 +32,7 @@ function Header() {
                 <Row className="align-items-center">
                     <Col lg={6} className="text-lg-start text-center pe-lg-4 pe-0 mb-5 mb-lg-0">
                         <img src="/assets/CHEKZAM-logo.png" alt="Classroom" className="img-fluid"/>
-                        <h3 className="pb-2">Quản lý lớp học trực tuyến đơn giản và hiệu quả</h3>
+                        <h3 className="pb-2 fw-semibold" style={{lineHeight: '1.6'}}>Quản lý lớp học trực tuyến và tổ chức bài tập đơn giản và hiệu quả</h3>
                         <h5 style={{lineHeight: '1.6'}} className="fw-normal text-muted px-4 px-lg-0 pb-4">
                             Nền tảng toàn diện giúp giáo viên quản lý lớp học, tạo bài kiểm tra trắc nghiệm
                             và theo dõi tiến độ học tập của học sinh.

@@ -43,6 +43,7 @@ export const ClassroomListPage = () => {
         sortFieldKeys,
     });
 
+    console.log(objectData)
     const handleRowClick = (row) => {
         const field = dataFields.classroomId.value;
         setOpenDropdownId(null);
@@ -59,6 +60,7 @@ export const ClassroomListPage = () => {
             <Row className="mt-3"><h5>Lớp học của tôi</h5></Row>
 
             <CommonListToolbar
+                placeHolder={"Tìm kiếm lớp học theo tên"}
                 onSearch={(keyword) => updateQueryParams({keyword})}
                 sortOptions={sortOptions}
                 onSortChange={handleSortChange}

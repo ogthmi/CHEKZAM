@@ -1,10 +1,10 @@
 import {Route} from "react-router-dom";
-import {RoleBasedRoute} from "../core/RoleBasedRoutes";
+import {RoleBasedRoute} from "../../router/core/RoleBasedRoutes";
 import {UserRoles} from "../../constants/data/UserRoles";
 import {Endpoints} from "../../constants/links/Endpoints";
 import {CommonAppLayout} from "../../ui/components/layout/CommonAppLayout";
-import {AdminUserManagementPage} from "../../modules/admin/AdminUserManagementPage";
-import {AdminClassroomDashboardPage} from "../../modules/admin/AdminClassroomDashboardPage";
+import {AdminUserManagementPage} from "./AdminUserManagementPage";
+import {AdminClassroomDashboardPage} from "./AdminClassroomDashboardPage";
 
 export const AdminRoutes = [
     <Route

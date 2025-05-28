@@ -14,7 +14,6 @@ export function FullNamePlaceholder() {
                 <h6 className="m-0 fw-bold">{fullName}</h6>
                 <p className="m-0">{roleLabel}</p>
             </div>
-            <UserDropdown/>
         </div>
     );
 }

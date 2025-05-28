@@ -25,12 +25,12 @@ export const ClassroomInfoHeader = () => {
                     >
                         &laquo; Lớp học
                     </Link>
-                    <h5 className="fw-1 px-md-0 px-2 mt-2">{currentClassroom.classroomName}</h5>
+                    <h5 className="fw-1 px-md-0 px-2 mt-2">{currentClassroom.classroomName.toUpperCase()}</h5>
                     <p className="text-muted">{currentClassroom.description}</p>
                 </Col>
                 <Col lg={3} className="text-lg-end text-center">
                     <Button
-                        variant={"outline-secondary"}
+                        variant={"light"}
                         size={"sm"}
                         onClick={openModal}
                     >

@@ -9,7 +9,6 @@ export const ClassroomInfoProvider = ({children}) => {
     console.log('[DEBUG] ClassroomInfoProvider rendered');
     const [currentClassroom, setCurrentClassroom] = useState();
     const {classroomId} = useParams();
-    console.log(classroomId)
     useEffect(() => {
         const getClassroomInfo = async () => {
             try {
@@ -25,8 +24,6 @@ export const ClassroomInfoProvider = ({children}) => {
 
     useEffect(() => {
     }, [currentClassroom]);
-
-    console.log(currentClassroom)
     return (
         <ClassroomInfoContext.Provider value={[currentClassroom, setCurrentClassroom]}>
             {children}

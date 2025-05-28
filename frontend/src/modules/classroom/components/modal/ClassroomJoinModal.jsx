@@ -1,10 +1,10 @@
-import { Modal, Button, Form } from "react-bootstrap";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { createData } from "../../../../services/CRUDService";
+import {Modal, Button, Form} from "react-bootstrap";
+import {useState} from "react";
+import {toast} from "react-toastify";
+import {createData} from "../../../../services/CRUDService";
 import {EntityTypes} from "../../../../constants/data/EntityTypes";
 
-export const ClassroomJoinModal = ({ onClose, modalTitle = "Tham gia lớp học", itemId }) => {
+export const ClassroomJoinModal = ({onClose, modalTitle = "Tham gia lớp học"}) => {
     const [loading, setLoading] = useState(false);
     const [classroomId, setClassroomId] = useState("");
 
@@ -16,13 +16,15 @@ export const ClassroomJoinModal = ({ onClose, modalTitle = "Tham gia lớp học
         }
 
         setLoading(true);
-        const response = await createData(EntityTypes.classroom.JOIN, classroomId.trim(), itemId); // Tùy backend bạn định nghĩa
-
-        if (response) {
+        const response = await createData(EntityTypes.classroom.JOIN, classroomId.trim());
+        console.log(response)
+        if (response.success) {
             toast.success("Tham gia lớp học thành công!");
             setLoading(false);
             onClose();
-            window.location.reload(); // Nếu muốn reload danh sách lớp học
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
         } else {
             toast.error("Không thể tham gia lớp học. Mã không hợp lệ hoặc đã tham gia.");
             setLoading(false);

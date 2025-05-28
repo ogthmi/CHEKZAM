@@ -3,22 +3,33 @@ import {HttpMethod} from "../constants/data/ActionMethods"
 import {EntityTypes} from "../constants/data/EntityTypes";
 import {ErrorMessages} from "../constants/messages/ErrorMessages"
 import {makeRequest} from "./RequestService"
+import {toast} from "react-toastify";
 
 const apiMap = {
     [EntityTypes.user.PROFILE]: (containerId, itemId) => ApiLinks.user.search(itemId),
+    [EntityTypes.user.CREATE]: () => ApiLinks.user.root,
+    [EntityTypes.user.COUNT]: () => ApiLinks.user.count,
     [EntityTypes.user.MY_PROFILE]: () => ApiLinks.user.myProfile,
+    [EntityTypes.user.MY_PASSWORD]: () => ApiLinks.user.myPassword,
     [EntityTypes.user.SEARCH]: (containerId, itemId) => ApiLinks.user.search(itemId),
     [EntityTypes.user.PROFILE]: (containerId, itemId) => ApiLinks.user.byId(itemId),
     [EntityTypes.classroom.INFO]: (containerId, itemId) => ApiLinks.classroom.byId(itemId),
-    [EntityTypes.classroom.JOIN]: (containerId, itemId) => ApiLinks.classroomMember.getById(containerId, itemId),
+    [EntityTypes.classroom.JOIN]: (containerId) => ApiLinks.classroomMember.join(containerId),
     [EntityTypes.classroom.LEAVE]: (containerId, itemId) => ApiLinks.classroomMember.leave(containerId),
     [EntityTypes.classroom.ADD_STUDENT]: (containerId, itemId) => ApiLinks.classroomMember.root(containerId),
+    [EntityTypes.classroom.ADD_ASSIGNMENT]: () => ApiLinks.assignment.attach,
+    [EntityTypes.classroom.REMOVE_ASSIGNMENT]: (containerId, itemId) => ApiLinks.classroomAssignment.getById(containerId, itemId),
     [EntityTypes.assignment.CREATE]: () => ApiLinks.assignment.root,
-    [EntityTypes.classroom.ADD_ASSIGNMENT]: (containerId, itemId) => ApiLinks.classroomAssignment.getById(containerId, itemId),
     [EntityTypes.assignment.INFO]: (containerId, itemId) => ApiLinks.assignment.byId(itemId),
+    [EntityTypes.assignment.ATTACHED_INFO]: (containerId, itemId) => ApiLinks.assignment.attachedInfo(containerId, itemId),
+    [EntityTypes.assignment.QUESTIONS]: (containerId, itemId) => ApiLinks.assignment.questionList(itemId),
+    [EntityTypes.submission.INFO]: (containerId) => ApiLinks.submission.infoById(containerId),
+    [EntityTypes.submission.START]: () => ApiLinks.submission.start,
+    [EntityTypes.submission.SUBMIT]: () => ApiLinks.submission.submit,
 };
 
 function toAPI(entityType, containerId, itemId) {
+
     const apiResolver = apiMap[entityType];
 
     if (!apiResolver) {
@@ -51,6 +62,7 @@ export const deleteData = async (entityType, containerId, itemIdToDelete) => {
         return response;
     } catch (error) {
         console.error("[Có lỗi xảy ra] ", error.message);
+        toast.error(error.message)
         return {success: false, message: error.message || ErrorMessages.DELETED_FAILED}
     }
 }
@@ -73,9 +85,11 @@ export const updateData = async (entityType, containerId, itemIdToCreate, body) 
         const API = toAPI(entityType, containerId, itemIdToCreate);
         console.info("[Call ApiLinks] ", API);
         const {success, data} = await makeRequest(API, HttpMethod.PUT, body, true)
-        if (success) return data.result;
+        const result = data.result;
+        return {success, result};
     } catch (error) {
         console.error("[Có lỗi xảy ra] ", error.message);
+        toast.error(error.message)
         return {success: false, message: error.message || ErrorMessages.UPDATED_FAILED}
     }
 }

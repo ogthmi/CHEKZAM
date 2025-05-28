@@ -22,8 +22,6 @@ export const ClassroomAddStudentModal = ({onClose, containerId}) => {
 
         if (data) {
             setStudents(prev => prev.some(sv => sv.userId === data.userId) ? prev : [...prev, data]);
-        } else {
-            toast.error("Không tìm thấy sinh viên.");
         }
         setLoading(false);
     };

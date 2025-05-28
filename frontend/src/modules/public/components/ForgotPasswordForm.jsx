@@ -7,9 +7,16 @@ export const ForgotPasswordForm = () => {
         <Container className="d-flex justify-content-center align-items-center mt-5 px-5">
             <Col md={6} lg={4}>
                 <h3 className="mb-4 text-center">Quên mật khẩu</h3>
+                <p className="mt-3 text-muted text-center" style={{ fontSize: "14px" }}>
+                    Vui lòng nhập các thông tin sau để khôi phục mật khẩu
+                </p>
                 <Form>
                     <Form.Group className="mb-3" controlId="email">
-                        <Form.Label>Nhập email khôi phục</Form.Label>
+                        <Form.Label>Tên tài khoản</Form.Label>
+                        <Form.Control type="username" />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="email">
+                        <Form.Label>Email khôi phục</Form.Label>
                         <Form.Control type="email" />
                     </Form.Group>
                     <Button variant="primary" type="submit" className="w-100 mb-3">

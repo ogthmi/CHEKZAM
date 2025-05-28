@@ -14,7 +14,7 @@ const links = {
         {name: 'Trang chủ', href: Endpoints.home.landing},
     ],
     admin: [
-        {name: 'Thống kê', href: Endpoints.admin.classroomDashboard},
+        // {name: 'Thống kê', href: Endpoints.admin.classroomDashboard},
         {name: 'Người dùng', href: Endpoints.admin.userManagement},
     ],
     teacher: [

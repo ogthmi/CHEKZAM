@@ -41,7 +41,7 @@ export const AssignmentUploadModal = ({modalTitle, show, handleClose, handleData
                     const answerList = answerKeys
                         .map((key) => ({
                             answerContent: row[key] || "",
-                            isCorrect: correctAnswers.includes(key)
+                            correct: correctAnswers.includes(key)
                         }))
                         .filter((answer) => answer.answerContent.trim() !== "");
 

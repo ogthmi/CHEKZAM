@@ -92,7 +92,6 @@ export const ClassroomModalRenderer = () => {
 
     if (currentModal === EntityTypes.classroom.ADD_ASSIGNMENT) {
         const {containerId} = modalProps;
-        console.log(modalProps)
         return (
             <ClassroomAddAssignmentModal containerId={containerId} onClose={closeModal}/>
         )
@@ -104,7 +103,7 @@ export const ClassroomModalRenderer = () => {
             title={title}
             message={message}
             onClose={closeModal}
-            entityType={EntityTypes.classroom.ADD_ASSIGNMENT}
+            entityType={EntityTypes.classroom.REMOVE_ASSIGNMENT}
             containerId={classroomId}
             itemId={assignmentId}
         />

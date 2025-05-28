@@ -1,0 +1,60 @@
+.badge-outline {
+    padding: 0.1rem 0.5rem;
+    font-size: 0.7rem;
+    display: inline-block;
+    font-weight: 500;
+    margin: 0;
+    border-radius: 999px;
+    border: 1px solid;
+    width: 100px;
+    text-align: center;
+}
+
+
+.badge-outline.primary {
+    color: var(--blue-900);
+    border-color: var(--blue-900);
+    background-color: transparent;
+}
+
+.badge-outline.secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+    background-color: transparent;
+}
+
+.badge-outline.success {
+    color: var(--green);
+    border-color: var(--green);
+    background-color: transparent;
+}
+
+.badge-outline.danger {
+    color: var(--red);
+    border-color: var(--red);
+    background-color: transparent;
+}
+
+.badge-outline.warning {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    background-color: transparent;
+}
+
+.badge-outline.info {
+    color: var(--teal);
+    border-color:var(--teal);
+    background-color: transparent;
+}
+
+.badge-outline.brown{
+    color: var(--brown);
+    border-color:var(--brown);
+    background-color: transparent;
+}
+
+.badge-outline.dark {
+    color: black;
+    border-color: black;
+    background-color: transparent;
+}

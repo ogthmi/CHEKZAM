@@ -12,3 +12,8 @@
     background-color: #FEECEC;
     border-color: #E21F1F;
 }
+
+.answer-missed {
+    background-color: #FCF8D0 ;
+    border-color: #E1B33E ;
+}

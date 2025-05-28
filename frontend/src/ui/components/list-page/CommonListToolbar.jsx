@@ -4,19 +4,20 @@ import {CommonSortDropdown} from "./CommonSortDropdown";
 
 export const CommonListToolbar = ({
                                       onSearch,
+                                      placeHolder = "Tìm kiếm",
                                       sortOptions,
                                       onSortChange,
                                       actionButtonText,
-                                      onActionButtonClick
+                                      onActionButtonClick,
                                   }) => {
     return (
         <div className="container">
             <Row className="p-0 mt-3">
                 <Col lg={actionButtonText ? 8 : 10} className="px-0 pe-lg-2 mb-2 mb-lg-0">
-                    <CommonSearchInput setKeyword={onSearch} />
+                    <CommonSearchInput placeholder={placeHolder} setKeyword={onSearch}/>
                 </Col>
                 <Col lg={2} className="px-0 mb-2 mb-lg-0">
-                    <CommonSortDropdown sortOptions={sortOptions} setSortOrder={onSortChange} />
+                    <CommonSortDropdown sortOptions={sortOptions} setSortOrder={onSortChange}/>
                 </Col>
                 {actionButtonText && onActionButtonClick && (
                     <Col lg={2} className="px-0 ps-lg-2">

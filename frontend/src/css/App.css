@@ -1,5 +1,4 @@
-body {
-    font-family: 'Segoe UI', sans-serif;
+:root {
     --blue-900: #1f4ab2;
     --blue-800: #426FDE;
     --blue-700: #6287E4;
@@ -9,16 +8,34 @@ body {
     --blue-100: #e7edfa;
     --grey-100: #eeecec;
 
+    --green: #35B21F;
+    --grren-light: #E9FAE7;
+    --red: #E21F1F;
+    --red-light: #FEECEC;
+    --yellow: #c19730;
+    --yellow-light: #FCF8D0;
+    --teal: #0b9db8;
+    --teal-light: #E1F5FE;
+    --brown: #805a36;
+    --brown-light: #F5E9D9;
+
     --border-radius: 5px;
 }
 
-.text-justify{
+html, body {
+    overscroll-behavior: none;
+}
+
+body {
+    font-family:  'Open Sans', sans-serif;
+}
+
+.text-justify {
     text-align: justify;
 }
 
 .navbar-brand {
     display: flex;
-    align-items: flex;
     font-size: 1.5rem;
 
 }
@@ -86,12 +103,6 @@ body {
 }
 
 
-
-
-
-
-
-
 .img-fluid {
     max-width: 80%;
     height: auto;
@@ -123,6 +134,10 @@ thead {
     text-decoration: underline;
 }
 
-.badge.bg-primary {
-    background-color: var(--blue-900) !important;
+.box {
+    padding: 5px 10px;
+    width: 200px;
+    border: 1px solid var(--blue-900);
+    background-color: var(--blue-100);
+    text-align: center;
 }

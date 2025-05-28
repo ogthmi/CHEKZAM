@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import 'font-awesome/css/font-awesome.min.css';
+import {ArrowUp} from "react-feather";
 
 export const CommonScrollToTopButton = () => {
     const topRef = useRef(null);
@@ -48,7 +49,7 @@ export const CommonScrollToTopButton = () => {
                         height: '35px', // Đảm bảo chiều rộng và chiều cao bằng nhau
                         backgroundColor: 'var(--blue-100)',
                         color: 'var(--blue-900)',
-                        borderRadius: '50%',
+                        borderRadius: '0',
                         border: 'var(--blue-900) 1px solid',
                         cursor: 'pointer',
                         display: 'flex',
@@ -56,10 +57,11 @@ export const CommonScrollToTopButton = () => {
                         alignItems: 'center',
                         fontSize: '20px', // Điều chỉnh kích thước của icon
                         textAlign: 'center',
+                        zIndex:9000,
                     }}
                 >
                     <h6 className={"p-0 pb-1 m-0"}>
-                        <i className="fa fa-chevron-up"></i>
+                        <ArrowUp size={18}/>
                     </h6>
                 </Button>
             )}

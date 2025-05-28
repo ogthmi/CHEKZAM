@@ -26,4 +26,5 @@ export const PublicRoutes = (<Route>
     <Route path="/error/403" element={<Error403/>}/>
     <Route path="/error/404" element={<Error404/>}/>
     <Route path="/error/500" element={<Error500/>}/>
+    <Route path="*" element={<Error404/>}/>
 </Route>);

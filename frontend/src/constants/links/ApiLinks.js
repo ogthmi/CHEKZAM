@@ -5,6 +5,7 @@ const ApiGroups = {
     classroom: '/classroom',
     user: '/user',
     assignment: '/assignment',
+    submission: '/submission',
 }
 
 const buildUrl = (group, path = '') => `${BASE_API_URL}${ApiGroups[group]}${path}`;
@@ -19,13 +20,14 @@ export const ApiLinks = {
     },
     classroom: {
         all: buildUrl('classroom', '/all'),
-        byId: (classroomId) => buildUrl('classroom', classroomId? `/${classroomId}` : ""),
+        byId: (classroomId) => buildUrl('classroom', classroomId ? `/${classroomId}` : ""),
     },
     classroomMember: {
         root: (classroomId) => buildUrl('classroom', `/${classroomId}/member`),
         all: (classroomId) => buildUrl('classroom', `/${classroomId}/member/all`),
         getById: (classroomId, memberId) => buildUrl('classroom', `/${classroomId}/member/${memberId}`),
         leave: (classroomId) => buildUrl('classroom', `/${classroomId}/member/me`),
+        join: (classroomId) => buildUrl('classroom', `/${classroomId}/member/join`),
     },
     classroomAssignment: {
         root: (classroomId) => buildUrl('classroom', `/${classroomId}/assignment`),
@@ -34,8 +36,11 @@ export const ApiLinks = {
     },
 
     user: {
+        root: buildUrl('user'),
         all: buildUrl('user', '/all'),
+        count: buildUrl('user', '/count'),
         myProfile: buildUrl('user', '/me'),
+        myPassword: buildUrl('user', '/me/password'),
         byId: (id) => buildUrl('user', `/${id}`),
         search: (keyword) => buildUrl('user', `?keyword=${keyword}`),
     },
@@ -43,7 +48,19 @@ export const ApiLinks = {
     assignment: {
         root: buildUrl('assignment'),
         all: buildUrl('assignment', '/all'),
-        byId: (assignmentId) => buildUrl('assignment', assignmentId? `/${assignmentId}` : ""),
+        byId: (assignmentId) => buildUrl('assignment', assignmentId ? `/${assignmentId}` : ""),
+        submissionAll: (assignmentId) => buildUrl('submission', `/assignment/${assignmentId}/all`),
         questionList: (assignmentId) => buildUrl('assignment', `/${assignmentId}/question`),
+        attachedClassroom: (assignmentId) => buildUrl('assignment', `/${assignmentId}/classroom/all`),
+        attachedInfo: (assignmentId, classroomId) => buildUrl('assignment', `/${assignmentId}/classroom/${classroomId}`),
+        attach: buildUrl('assignment', `/attach`),
+    },
+
+    submission: {
+        assignmentClassroomAll: (classroomId, assignmentId) => buildUrl('submission', `/classroom/${classroomId}/assignment/${assignmentId}/all`),
+        detailsById: (id) => buildUrl('submission', `/${id}/details`),
+        infoById: (id) => buildUrl('submission', `/${id}`),
+        start: buildUrl('submission', `/start`),
+        submit: buildUrl('submission', `/submit`),
     }
 };

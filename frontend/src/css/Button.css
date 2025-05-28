@@ -19,3 +19,27 @@
 .btn-outline-primary:hover {
     background-color: var(--blue-900);
 }
+
+.btn-question-chosen {
+    color: var(--green);
+    border-color: var(--green);
+    background-color: var(--grren-light);
+}
+
+.btn-question-chosen:hover {
+    color: white;
+    border-color: var(--green);
+    background-color: var(--green);
+}
+
+.btn-question-warning {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    background-color: var(--yellow-light);
+}
+
+.btn-question-warning:hover {
+    color: white;
+    border-color: var(--yellow);
+    background-color: var(--yellow);
+}

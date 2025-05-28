@@ -14,6 +14,11 @@ import {ClassroomModalRenderer} from "../components/modal/ClassroomModalRenderer
 import {CommonActionDropdown} from "../../../ui/components/dropdown/CommonActionDropdown";
 import {ClassroomRowActions} from "../components/common/ClassroomRowActions";
 import {Endpoints} from "../../../constants/links/Endpoints";
+import {
+    formatDateTimeToDisplay,
+    formatDuration,
+    formatMaxAttempts
+} from "../../assignment/util/AssignmentDataFormatter";
 
 export const ClassroomAssignmentPage = () => {
     const [classroomInfo] = useContext(ClassroomInfoContext);
@@ -22,12 +27,13 @@ export const ClassroomAssignmentPage = () => {
     const navigate = useNavigate();
     const {showModal} = useContext(CommonModalContext);
 
-    const dataFields = ResponseDataFields.AssignmentInfo(isTeacher);
+
+    const dataFields = ResponseDataFields.AssignmentClassroom("classroom-assignment");
+
 
     const sortFieldKeys = {
         name: dataFields.assignmentName.value,
         ...(isTeacher && {id: dataFields.assignmentId.value}),
-        createdAt: isTeacher ? dataFields.createdAt?.value : undefined,
     };
 
     const {
@@ -42,9 +48,19 @@ export const ClassroomAssignmentPage = () => {
     } = usePaginatedTable({
         entityType: EntityTypes.classroom.ASSIGNMENT,
         containerId: classroomId,
+        itemId: null,
         defaultSortBy: dataFields.assignmentName.value,
         sortFieldKeys,
     });
+
+    const displayedData = objectData.map(item => ({
+        ...item,
+        duration: formatDuration(item.duration),
+        maxAttempts: formatMaxAttempts(item.maxAttempts),
+        openTime: formatDateTimeToDisplay(item.openTime),
+        dueTime: formatDateTimeToDisplay(item.dueTime),
+    }));
+
 
     const handleRowClick = (row) => {
         const field = dataFields.assignmentId.value;
@@ -57,22 +73,24 @@ export const ClassroomAssignmentPage = () => {
         setOpenDropdownId(prevId => (prevId === id ? null : id));
     };
 
+
     if (!classroomId) return <p>Đang tải...</p>;
 
     return (
         <Container className={"p-0"}>
             <CommonListToolbar
+                placeHolder={"Tìm kiếm bài tập theo tên"}
                 onSearch={(keyword) => updateQueryParams({keyword})}
                 sortOptions={sortOptions}
                 onSortChange={handleSortChange}
-                actionButtonText={isTeacher ? 'Thêm bài tập' : null}
-                onActionButtonClick={() => isTeacher && showModal(EntityTypes.classroom.ADD_ASSIGNMENT)}
+                actionButtonText={isTeacher ? 'Giao bài tập' : null}
+                onActionButtonClick={() => isTeacher && showModal(EntityTypes.classroom.ADD_ASSIGNMENT, { containerId: classroomId })}
             />
 
             <CommonTable
                 headers={Object.values(dataFields).map((f) => f.label)}
                 fields={Object.values(dataFields).map((f) => f.value)}
-                data={objectData}
+                data={displayedData}
                 message={message}
                 leftAlignedColumns={isTeacher ? [0, 1] : [0]}
                 excludedFields={!isTeacher ? [dataFields.assignmentId.label] : []}

@@ -59,6 +59,7 @@ export const ClassroomMemberPage = () => {
     return (
         <Container className={"p-0"}>
             <CommonListToolbar
+                placeHolder={"Tìm kiếm sinh viên theo họ và tên"}
                 onSearch={(keyword) => updateQueryParams({ keyword })}
                 sortOptions={sortOptions}
                 onSortChange={handleSortChange}

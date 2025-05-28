@@ -3,7 +3,7 @@ import {Navigate, Route, useParams} from 'react-router-dom';
 import {Cookies} from "../../constants/data/Cookies";
 import {Endpoints} from "../../constants/links/Endpoints";
 import {UserRoles} from "../../constants/data/UserRoles";
-import {UserProfilePage} from "../../modules/user/UserProfilePage";
+import {UserProfilePage} from "../../modules/user/pages/UserProfilePage";
 
 const UserProfileRouteConfig = ({ children }) => {
     const params = useParams();

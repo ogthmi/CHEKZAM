@@ -1,5 +1,5 @@
 import { Modal, Button } from "react-bootstrap";
-import { useDeleteHandler } from "./useDeleteHandler";
+import { useDeleteHandler } from "../../hooks/data/useDeleteHandler";
 
 export const CommonDeleteModal = ({
                                       title,

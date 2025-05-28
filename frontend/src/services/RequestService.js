@@ -2,6 +2,7 @@ import {Cookies} from "../constants/data/Cookies";
 import {ErrorMessages} from "../constants/messages/ErrorMessages";
 import {ApiLinks} from "../constants/links/ApiLinks";
 import {Endpoints} from "../constants/links/Endpoints";
+import {toast} from "react-toastify";
 
 export const makeRequest = async (url, method, body = null, needToken = false) => {
     const headers = {"Content-Type": "application/json"};
@@ -28,6 +29,9 @@ export const makeRequest = async (url, method, body = null, needToken = false) =
                 message: ErrorMessages.FETCH_FAILED
             };
         }
+    }
+    if (response.status === 400) {
+        toast.error(response.message)
     }
     return response;
 };

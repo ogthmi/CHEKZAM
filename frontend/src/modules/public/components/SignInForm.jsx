@@ -77,7 +77,7 @@ export function SignInForm() {
                         <div className="text-center mb-3">
                             <Button type="submit" className="w-100 btn-primary">Đăng nhập</Button>
                             <p className="pt-3">Hoặc</p>
-                            <Button variant="light" className="w-100">Đăng nhập với Google</Button>
+                            <Button variant="secondary" className="w-100">Đăng nhập với Google</Button>
                         </div>
                         <div className="text-center mb-3">
                             <p className='me-2'>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Offcanvas, Nav } from 'react-bootstrap';
 import { NavLinks } from './NavLinks';
 
-export function OffcanvasNavbar() {
+export function OffcanvasNavbar({showNavLinks = true}) {
     return (
         <Navbar.Offcanvas id="offcanvasNavbar" placement="start">
             <Offcanvas.Header closeButton>
@@ -12,7 +12,7 @@ export function OffcanvasNavbar() {
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <Nav className="me-auto">
-                    <NavLinks />
+                    {showNavLinks && <NavLinks />}
                 </Nav>
             </Offcanvas.Body>
         </Navbar.Offcanvas>

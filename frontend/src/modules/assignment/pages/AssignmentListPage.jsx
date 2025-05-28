@@ -1,47 +1,34 @@
-import {useCallback, useContext, useEffect, useState} from "react";
-import {usePaginatedData} from "../../../ui/hooks/pagination/usePaginatedData";
+import {useCallback, useContext, useState} from "react";
 import {EntityTypes} from "../../../constants/data/EntityTypes";
 import {Endpoints} from "../../../constants/links/Endpoints";
-import {Col, Container, Row} from "react-bootstrap";
-import {CommonSearchInput} from "../../../ui/components/list-page/CommonSearchInput";
-import {CommonSortDropdown} from "../../../ui/components/list-page/CommonSortDropdown";
+import {Container, Row} from "react-bootstrap";
 import {CommonTable} from "../../../ui/components/list-page/CommonTable";
 import {CommonPagination} from "../../../ui/components/list-page/CommonPagination";
-import {CommonLinkButton} from "../../../ui/components/CommonLinkButton";
 import {useNavigate} from "react-router-dom";
-import {Cookies} from "../../../constants/data/Cookies";
-import {UserRoles} from "../../../constants/data/UserRoles";
 import {CommonModalContext} from "../../../ui/components/modal/CommonModalContext";
-import {ResponseDataFields} from "../../../constants/data/ResponseDataFields";
 import {usePaginatedTable} from "../../../ui/hooks/pagination/usePaginatedTable";
 import {CommonListToolbar} from "../../../ui/components/list-page/CommonListToolbar";
 import {CommonActionDropdown} from "../../../ui/components/dropdown/CommonActionDropdown";
-import {ClassroomRowActions} from "../../classroom/components/common/ClassroomRowActions";
 import {ClassroomModalRenderer} from "../../classroom/components/modal/ClassroomModalRenderer";
 import {AssignmentRowActions} from "../components/dropdown/AssignmentRowActions";
+import {AssignmentFieldBuilder} from "../util/AssignmentDataFields";
+import {formatAssignmentType} from "../util/AssignmentDataFormatter";
+import {AssignmentModalRenderer} from "../components/modal/AssignmentModalRenderer";
 
 
 export const AssignmentListPage = () => {
     const navigate = useNavigate();
     const {showModal} = useContext(CommonModalContext);
 
-    const dataFields = ResponseDataFields.AssignmentInfo(true);
+    const dataFields = AssignmentFieldBuilder.getGeneralInfoFields(true);
 
     const sortFieldKeys = {
-        name: "assignmentName",
-        id: "assignmentId",
-        createdAt: "createdAt"
+        name: dataFields.assignmentName.value, id: dataFields.assignmentId.value, createdAt: dataFields.createdAt.value,
     };
 
+
     const {
-        queryParams,
-        updateQueryParams,
-        sortOptions,
-        handleSortChange,
-        objectData,
-        totalPages,
-        totalElements,
-        message
+        queryParams, updateQueryParams, sortOptions, handleSortChange, objectData, totalPages, totalElements, message
     } = usePaginatedTable({
         entityType: EntityTypes.assignment.INFO,
         containerId: null,
@@ -50,8 +37,7 @@ export const AssignmentListPage = () => {
     });
 
     const cleanedObjectData = objectData.map(assignment => ({
-        ...assignment,
-            assignmentType: assignment.assignmentType === "SINGLE_CHOICE" ? "Trắc nghiệm một đáp án" : assignment.assignmentType === "MULTIPLE_CHOICE"? "Trắc nghiệm nhiều đáp án" : "-"
+        ...assignment, assignmentType: formatAssignmentType(assignment.assignmentType),
     }))
 
     const handleRowClick = (row) => {
@@ -64,6 +50,17 @@ export const AssignmentListPage = () => {
     const handleToggleDropdown = (id) => {
         setOpenDropdownId(prevId => (prevId === id ? null : id));
     };
+
+    const renderActions = useCallback((row) => (
+        <CommonActionDropdown
+            isOpen={openDropdownId === row[dataFields.assignmentId.value]}
+            onToggle={() => handleToggleDropdown(row[dataFields.assignmentId.value])}
+            actions={AssignmentRowActions({
+                page: AssignmentListPage, row, dataFields, navigate, showModal,
+            })}
+        />
+    ), [openDropdownId, dataFields, navigate, showModal]);
+
 
     return (
         <Container className="p-2 mt-3">
@@ -82,19 +79,7 @@ export const AssignmentListPage = () => {
                 fields={Object.values(dataFields).map((field) => field.value)}
                 data={cleanedObjectData}
                 message={message}
-                renderActions={(row) => (
-                    <CommonActionDropdown
-                        isOpen={openDropdownId === row[dataFields.assignmentId.value]}
-                        onToggle={() => handleToggleDropdown(row[dataFields.assignmentId.value])}
-                        actions={AssignmentRowActions({
-                            page: AssignmentListPage,
-                            row: row,
-                            dataFields: dataFields,
-                            navigate: navigate,
-                            showModal: null
-                        })}
-                    />
-                )}
+                renderActions={(row) => renderActions(row)}
                 leftAlignedColumns={[1, 2]}
                 underlinedColumns={[1]}
                 onRowClick={handleRowClick}
@@ -107,7 +92,7 @@ export const AssignmentListPage = () => {
                 setPageNumber={(pageNumber) => updateQueryParams({pageNumber})}
             />
 
-            <ClassroomModalRenderer/>
+            <AssignmentModalRenderer/>
         </Container>
     );
 }

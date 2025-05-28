@@ -5,20 +5,23 @@ import {EntityTypes} from "../../../../constants/data/EntityTypes";
 
 export const AssignmentInfoContext = createContext();
 
-export const AssignmentInfoProvider = ({children}) => {
+export const AssignmentInfoProvider = ({isInClassroom = false, children}) => {
     const [currentAssignment, setCurrentAssignment] = useState(null);
-    const {assignmentId} = useParams();
+    const {assignmentId, classroomId} = useParams();
     useEffect(() => {
         const getAssignmentInfo = async () => {
             try {
-                const assignmentInfo = await getData(EntityTypes.assignment.INFO, null, assignmentId);
+                let assignmentInfo;
+                if (isInClassroom) assignmentInfo = await getData(EntityTypes.assignment.ATTACHED_INFO, assignmentId, classroomId)
+                else assignmentInfo = await getData(EntityTypes.assignment.INFO, null, assignmentId);
                 setCurrentAssignment(assignmentInfo);
             } catch (error) {
                 console.error("Error fetching assignemnt details:", error);
             }
         };
 
-        getAssignmentInfo().then(r =>{} );
+        getAssignmentInfo().then(r => {
+        });
     }, [assignmentId]);
 
     useEffect(() => {

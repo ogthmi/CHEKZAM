@@ -14,11 +14,13 @@ export const Endpoints = {
     },
     classroom: {
         root: (role) => `/${role}/classroom`,
+        assignment: (role, classroomId) => `/${role}/classroom/${classroomId}/assignment`,
     },
     assignment: {
         domain: "/assignment",
         content: "/content",
-        history: "/history",
+        history: "/submission-history",
+        attachedClassroom: "/attached-classroom",
         root: (role) => `/${role}/assignment`,
         create: (role) => `/${role}/assignment/create`,
     },

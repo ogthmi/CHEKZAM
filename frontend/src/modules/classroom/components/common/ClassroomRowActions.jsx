@@ -65,12 +65,7 @@ export const ClassroomRowActions = ({
                 },
             },
             ...(isTeacher ? [
-                {
-                    label: "Chỉnh sửa",
-                    onClick: () => {
-                        console.log("sửa bài tập")
-                    }
-                },
+
                 {
                     label: "Xóa",
                     onClick: () => {

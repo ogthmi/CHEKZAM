@@ -10,7 +10,7 @@ import {useCallback, useMemo} from "react";
 export const useSort = ({fieldKeys, updateFilters, defaultKey = "az"}) => {
     // Kiểm tra nếu fieldKeys chứa name và id (cần thiết) và createdAt (tùy chọn)
     const sortMap = useMemo(() => {
-        if (!fieldKeys || !fieldKeys.name) {
+        if (!fieldKeys) {
             console.warn("Missing fieldKeys or essential fields: name or id");
             return {}; // Trả về đối tượng rỗng nếu thiếu các trường bắt buộc
         }
@@ -29,6 +29,10 @@ export const useSort = ({fieldKeys, updateFilters, defaultKey = "az"}) => {
         if (fieldKeys.createdAt) {
             base.newer = {sortBy: fieldKeys.createdAt, direction: "desc", label: "Mới hơn"};
             base.older = {sortBy: fieldKeys.createdAt, direction: "asc", label: "Cũ hơn"};
+        }
+
+        if (fieldKeys.role) {
+            base.role = {sortBy: fieldKeys.role, direction: "asc", label: "Chức vụ"};
         }
 
         return base;

@@ -1,3 +1,4 @@
+
 export const ResponseDataFields = {
     ClassroomInfo: (isTeacher) => ({
         classroomId: {label: "Mã lớp", value: "classroomId"},
@@ -5,15 +6,27 @@ export const ResponseDataFields = {
         ...(isTeacher && {createdAt: {label: "Thời gian tạo", value: "createdAt"}}),
         totalMember: {label: "Sĩ số", value: "classroomStatistic.totalMembers"},
         totalAssignment: {label: "Bài tập", value: "classroomStatistic.totalAssignments"},
-        totalDocument: {label: "Tài liệu", value: "classroomStatistic.totalDocuments"},
     }),
 
-    AssignmentInfo: (isTeacher) => ({
+    AssignmentInfo: (showHidden) => ({
         assignmentId: {label: "Mã bài tập", value: "assignmentId"},
         assignmentName: {label: "Tên bài tập", value: "assignmentName"},
-        assignmenType: {label: "Loại bài tập", value: "assignmentType"},
-        ...(isTeacher && {createdAt: {label: "Thời gian tạo", value: "createdAt"}}),
+        assignmentType: {label: "Loại bài tập", value: "assignmentType"},
+        ...(showHidden && {createdAt: {label: "Thời gian tạo", value: "createdAt"}}),
         totalQuestions: {label: "Số câu hỏi", value: "totalQuestions"},
+    }),
+
+    AssignmentClassroom: (page) => ({
+        ...(page === "attached-classroom" && {classroomId: {label: "Mã lớp", value: "classroomId"}}),
+        ...(page === "attached-classroom" && {classroomName: {label: "Tên lớp", value: "classroomName"}}),
+        ...(page === "classroom-assignment" && {assignmentId: {label: "Mã bài tập", value: "assignmentId"}}),
+        ...(page === "classroom-assignment" && {assignmentName: {label: "Tên bài tập", value: "assignmentName"}}),
+        ...(page === "classroom-assignment" && {totalQuestions: {label: "Số câu hỏi", value: "totalQuestions"}}),
+        assignedTime: {label: "Thời gian giao", value: "assignedTime"},
+        duration: {label: "Thời lượng", value: "duration"},
+        maxAttempts: {label: "Số lượt", value: "maxAttempts"},
+        openTime: {label: "Bắt đầu", value: "openTime"},
+        dueTime: {label: "Hạn chót", value: "dueTime"},
     }),
 
     UserInfo: (showHiddenProfile) => ({
