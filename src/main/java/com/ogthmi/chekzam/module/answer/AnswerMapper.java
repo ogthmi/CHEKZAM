@@ -1,5 +1,6 @@
 package com.ogthmi.chekzam.module.answer;
 
+import com.ogthmi.chekzam.module.submission_answer.dto.AnswerDTO;
 import org.springframework.stereotype.Component;
 
 @Component
