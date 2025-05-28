@@ -1,6 +1,6 @@
 package com.ogthmi.chekzam.module.question;
 
-import com.ogthmi.chekzam.module.submission_answer.dto.AnswerDTO;
+import com.ogthmi.chekzam.module.answer.AnswerDTO;
 import com.ogthmi.chekzam.module.answer.AnswerEntity;
 import com.ogthmi.chekzam.module.answer.AnswerMapper;
 import com.ogthmi.chekzam.module.assignment_question.AssignmentQuestionEntity;
